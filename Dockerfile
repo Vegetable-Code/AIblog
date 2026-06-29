@@ -1,4 +1,4 @@
-FROM node:20-alpine AS frontend-builder
+﻿FROM node:20-alpine AS frontend-builder
 WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json* ./
 RUN npm ci
@@ -37,7 +37,7 @@ http {
     keepalive_timeout 65;
 
     server {
-        listen 8000;
+        listen __PORT__;
 
         # Frontend
         location / {
@@ -69,7 +69,11 @@ COPY <<'SCRIPT' /start.sh
 #!/bin/bash
 cd /app
 python init_prod.py
-uvicorn app.main:app --host 127.0.0.1 --port 8001 --workers 2 &
+export API_PORT=$((PORT - 1 || 8000))
+sed "s/__PORT__/${PORT:-8000}/g" /etc/nginx/nginx.conf > /tmp/nginx.conf
+mv /tmp/nginx.conf /etc/nginx/nginx.conf
+cd /app
+uvicorn app.main:app --host 127.0.0.1 --port ${API_PORT} --workers 2 &
 nginx -g "daemon off;"
 SCRIPT
 
