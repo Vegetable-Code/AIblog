@@ -4,6 +4,7 @@ from jose import jwt
 from passlib.context import CryptContext
 from .config import settings
 
+# Use bcrypt with passlib - pin bcrypt<4.1 in requirements or use this workaround
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
