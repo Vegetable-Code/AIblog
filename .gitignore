@@ -1,0 +1,12 @@
+node_modules
+dist
+.vite
+.env
+.env.local
+__pycache__
+*.pyc
+*.pyo
+.DS_Store
+*.log
+.vscode
+.idea
