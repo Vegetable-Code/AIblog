@@ -69,8 +69,10 @@ COPY <<'SCRIPT' /start.sh
 #!/bin/bash
 cd /app
 python init_prod.py
-export API_PORT=$((PORT - 1 || 8000))
-sed "s/__PORT__/${PORT:-8000}/g" /etc/nginx/nginx.conf > /tmp/nginx.conf
+# Use 8000 for nginx, 8001 for uvicorn (same as railway PORT env)
+NGINX_PORT=${PORT:-8000}
+API_PORT=8001
+sed "s/__PORT__/${NGINX_PORT}/g" /etc/nginx/nginx.conf > /tmp/nginx.conf
 mv /tmp/nginx.conf /etc/nginx/nginx.conf
 cd /app
 uvicorn app.main:app --host 127.0.0.1 --port ${API_PORT} --workers 2 &
