@@ -1,4 +1,4 @@
-from datetime import timedelta
+﻿from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -8,6 +8,7 @@ from ..core.config import settings
 from ..core.deps import get_current_user
 from ..models.user import User
 from ..schemas.token import Token
+from pydantic import BaseModel, EmailStr
 from ..schemas.user import UserResponse
 
 router = APIRouter(prefix="/auth", tags=["\u8ba4\u8bc1"])

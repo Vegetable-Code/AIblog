@@ -46,7 +46,7 @@
               {{ loginLoading ? '登录中...' : '登录' }}
             </button>
             <p class="text-center text-xs text-slate-600">
-              <button type="button" @click="activeTab = 'register'" class="text-cyan-400 hover:text-cyan-300">没有账号？立即注册</button>
+              <button type="button" @click="activeTab = 'register'; refreshCaptcha()" class="text-cyan-400 hover:text-cyan-300">没有账号？立即注册</button>
             </p>
           </form>
 
@@ -91,9 +91,13 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import axios from 'axios'
 import { useAuthStore } from '../stores/auth'
 
 const auth = useAuthStore()
+
+// Load captcha on mount
+refreshCaptcha()
 const activeTab = ref('login')
 const tabs = [
   { key: 'login', label: '登录' },
@@ -101,7 +105,7 @@ const tabs = [
 ]
 
 const loginForm = reactive({ username: '', password: '' })
-const regForm = reactive({ username: '', email: '', password: '', nickname: '' })
+const regForm = reactive({ username: '', email: '', password: '', nickname: '', captchaId: '', captchaText: '', emailCode: '' })
 const loginLoading = ref(false)
 const regLoading = ref(false)
 const loginError = ref('')
