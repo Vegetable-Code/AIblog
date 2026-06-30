@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <Teleport to="body">
     <div v-if="auth.showLogin" class="fixed inset-0 z-[60] flex items-center justify-center p-4"
       @click.self="auth.closeLogin()">
@@ -95,10 +95,12 @@ import axios from 'axios'
 import { useAuthStore } from '../stores/auth'
 
 const auth = useAuthStore()
-
-// Load captcha on mount
-refreshCaptcha()
 const activeTab = ref('login')
+const captchaSvg = ref('')
+const captchaLoading = ref(false)
+const emailCodeSending = ref(false)
+const emailCooldown = ref(0)
+
 const tabs = [
   { key: 'login', label: '登录' },
   { key: 'register', label: '注册' },
@@ -110,6 +112,48 @@ const loginLoading = ref(false)
 const regLoading = ref(false)
 const loginError = ref('')
 const regError = ref('')
+
+async function refreshCaptcha() {
+  captchaLoading.value = true
+  try {
+    const res = await axios.get('/api/v1/captcha/image')
+    regForm.captchaId = res.data.captcha_id
+    captchaSvg.value = res.data.svg
+  } catch (e) {
+    console.error('Failed to load captcha', e)
+  } finally {
+    captchaLoading.value = false
+  }
+}
+
+async function sendEmailCode() {
+  if (!regForm.email) {
+    regError.value = '请先输入邮箱'
+    return
+  }
+  if (!regForm.captchaId || !regForm.captchaText) {
+    regError.value = '请先完成图形验证码'
+    return
+  }
+  emailCodeSending.value = true
+  regError.value = ''
+  try {
+    await axios.post('/api/v1/email-code/send', {
+      email: regForm.email,
+      captcha_id: regForm.captchaId,
+      captcha_text: regForm.captchaText,
+    })
+    emailCooldown.value = 60
+    const timer = setInterval(() => {
+      emailCooldown.value--
+      if (emailCooldown.value <= 0) clearInterval(timer)
+    }, 1000)
+  } catch (e) {
+    regError.value = e.response?.data?.detail || '验证码发送失败'
+  } finally {
+    emailCodeSending.value = false
+  }
+}
 
 async function handleLogin() {
   loginLoading.value = true
@@ -129,13 +173,28 @@ async function handleRegister() {
   regLoading.value = true
   regError.value = ''
   try {
-    await auth.register(regForm.username, regForm.email, regForm.password, regForm.nickname)
+    await axios.post('/api/v1/auth/register', {
+      username: regForm.username,
+      email: regForm.email,
+      password: regForm.password,
+      nickname: regForm.nickname,
+      email_code: regForm.emailCode,
+      captcha_id: regForm.captchaId,
+      captcha_text: regForm.captchaText,
+    })
+    await auth.login(regForm.username, regForm.password)
     auth.closeLogin()
     regForm.password = ''
+    regForm.emailCode = ''
+    regForm.captchaText = ''
   } catch (e) {
     regError.value = e.response?.data?.detail || '注册失败'
+    refreshCaptcha()
   } finally {
     regLoading.value = false
   }
 }
+
+// Load captcha on mount
+refreshCaptcha()
 </script>
