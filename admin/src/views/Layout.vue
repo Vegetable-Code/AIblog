@@ -31,6 +31,10 @@
           <el-icon><DataAnalysis /></el-icon>
           <span>仪表盘</span>
         </el-menu-item>
+        <el-menu-item index="/posts/import-pdf" class="sidebar-link mx-2 rounded-xl my-0.5 h-10">
+          <el-icon><Upload /></el-icon>
+          <span>PDF 导入</span>
+        </el-menu-item>
         <el-menu-item index="/posts" class="sidebar-link mx-2 rounded-xl my-0.5 h-10">
           <el-icon><Document /></el-icon>
           <span>文章管理</span>
@@ -98,7 +102,7 @@
 <script setup>
 import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { SwitchButton } from '@element-plus/icons-vue'
+import { SwitchButton, Upload } from '@element-plus/icons-vue'
 import { useAuthStore } from '../stores/auth'
 
 const route = useRoute()
@@ -109,6 +113,7 @@ const pageTitle = computed(() => {
   const titles = {
     '/dashboard': '仪表盘',
     '/posts': '文章管理',
+    '/posts/import-pdf': 'PDF 导入',
     '/posts/create': '新建文章',
     '/categories': '分类管理',
     '/tags': '标签管理',

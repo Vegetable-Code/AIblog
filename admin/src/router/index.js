@@ -4,6 +4,7 @@ import Layout from '../views/Layout.vue'
 import Dashboard from '../views/Dashboard.vue'
 import Posts from '../views/Posts.vue'
 import PostEdit from '../views/PostEdit.vue'
+import ImportPDF from '../views/ImportPDF.vue'
 import Categories from '../views/Categories.vue'
 import Tags from '../views/Tags.vue'
 import Comments from '../views/Comments.vue'
@@ -20,6 +21,7 @@ const routes = [
       { path: 'dashboard', name: 'Dashboard', component: Dashboard },
       { path: 'posts', name: 'Posts', component: Posts },
       { path: 'posts/create', name: 'PostCreate', component: PostEdit },
+      { path: 'posts/import-pdf', name: 'ImportPDF', component: ImportPDF },
       { path: 'posts/:id/edit', name: 'PostEdit', component: PostEdit, props: true },
       { path: 'categories', name: 'Categories', component: Categories },
       { path: 'tags', name: 'Tags', component: Tags },
