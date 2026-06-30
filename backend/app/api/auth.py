@@ -19,7 +19,6 @@ class RegisterRequest(BaseModel):
     email: EmailStr
     password: str
     nickname: str = ""
-    email_code: str
     captcha_id: str
     captcha_text: str
 
@@ -49,9 +48,6 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
     if not verify_captcha(req.captcha_id, req.captcha_text):
         raise HTTPException(status_code=400, detail="图形验证码错误")
 
-    from .email_code import verify_email_code
-    if not verify_email_code(req.email, req.email_code):
-        raise HTTPException(status_code=400, detail="邮箱验证码错误或已过期")
 
     db_user = db.query(User).filter((User.username == req.username) | (User.email == req.email)).first()
     if db_user:

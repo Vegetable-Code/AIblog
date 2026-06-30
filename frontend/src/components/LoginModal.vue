@@ -83,19 +83,6 @@
               </div>
             </div>
 
-            <!-- Email Code -->
-            <div>
-              <div class="text-xs text-slate-400 mb-1.5">邮箱验证码</div>
-              <div class="flex gap-2">
-                <input v-model="regForm.emailCode" placeholder="输入6位验证码" required maxlength="6"
-                  class="flex-1 bg-slate-700/50 border border-slate-600/50 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 transition-colors" />
-                <button type="button" @click="sendEmailCode" :disabled="emailCodeSending || emailCooldown > 0"
-                  class="flex-shrink-0 px-4 py-3 text-xs font-medium rounded-xl transition-all whitespace-nowrap"
-                  :class="emailCooldown > 0 ? 'bg-slate-700/50 text-slate-500' : 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/20'">
-                  {{ emailCooldown > 0 ? emailCooldown + 's' : (emailCodeSending ? '发送中...' : '获取验证码') }}
-                </button>
-              </div>
-            </div>
 
             <div v-if="regError" class="text-red-400 text-xs">{{ regError }}</div>
             <button type="submit" :disabled="regLoading"
@@ -128,8 +115,6 @@ const auth = useAuthStore()
 const activeTab = ref('login')
 const captchaSvg = ref('')
 const captchaLoading = ref(false)
-const emailCodeSending = ref(false)
-const emailCooldown = ref(0)
 
 const tabs = [
   { key: 'login', label: '登录' },
@@ -137,7 +122,7 @@ const tabs = [
 ]
 
 const loginForm = reactive({ username: '', password: '' })
-const regForm = reactive({ username: '', email: '', password: '', nickname: '', captchaId: '', captchaText: '', emailCode: '' })
+const regForm = reactive({ username: '', email: '', password: '', nickname: '', captchaId: '', captchaText: '' })
 const loginLoading = ref(false)
 const regLoading = ref(false)
 const loginError = ref('')
@@ -153,36 +138,6 @@ async function refreshCaptcha() {
     console.error('Failed to load captcha', e)
   } finally {
     captchaLoading.value = false
-  }
-}
-
-async function sendEmailCode() {
-  if (!regForm.email) {
-    regError.value = '请先输入邮箱'
-    return
-  }
-  if (!regForm.captchaId || !regForm.captchaText) {
-    regError.value = '请先完成图形验证码'
-    return
-  }
-  emailCodeSending.value = true
-  regError.value = ''
-  try {
-    await axios.post('/api/v1/email-code/send', {
-      email: regForm.email,
-      captcha_id: regForm.captchaId,
-      captcha_text: regForm.captchaText,
-    })
-    emailCooldown.value = 60
-    const timer = setInterval(() => {
-      emailCooldown.value--
-      if (emailCooldown.value <= 0) clearInterval(timer)
-    }, 1000)
-  } catch (e) {
-    regError.value = e.response?.data?.detail || '验证码发送失败'
-    refreshCaptcha()
-  } finally {
-    emailCodeSending.value = false
   }
 }
 
@@ -209,14 +164,13 @@ async function handleRegister() {
       email: regForm.email,
       password: regForm.password,
       nickname: regForm.nickname,
-      email_code: regForm.emailCode,
+
       captcha_id: regForm.captchaId,
       captcha_text: regForm.captchaText,
     })
     await auth.login(regForm.username, regForm.password)
     auth.closeLogin()
     regForm.password = ''
-    regForm.emailCode = ''
     regForm.captchaText = ''
   } catch (e) {
     regError.value = e.response?.data?.detail || '注册失败'

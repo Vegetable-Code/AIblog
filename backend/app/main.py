@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .core.config import settings
 from .core.database import get_db
 from .core.database import engine, Base
-from .api import auth, posts, categories, tags, comments, users, dashboard, ai_search, captcha, email_code
+from .api import auth, posts, categories, tags, comments, users, dashboard, ai_search, captcha
 from .api.posts import detail_router
 
 Base.metadata.create_all(bind=engine)
@@ -22,7 +22,6 @@ app.include_router(users.router, prefix=api_prefix)
 app.include_router(dashboard.router, prefix=api_prefix)
 app.include_router(ai_search.router, prefix=api_prefix)
 app.include_router(captcha.router, prefix=api_prefix)
-app.include_router(email_code.router, prefix=api_prefix)
 app.include_router(detail_router, prefix=api_prefix)
 
 @app.get("/")
