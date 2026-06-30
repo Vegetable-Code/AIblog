@@ -1,4 +1,4 @@
-﻿FROM python:3.11-slim
+FROM python:3.11-slim
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends gcc default-libmysqlclient-dev nginx curl && rm -rf /var/lib/apt/lists/*
@@ -32,6 +32,7 @@ events {
 http {
     include /etc/nginx/mime.types;
     default_type application/octet-stream;
+    client_max_body_size 50M;
     sendfile on;
     keepalive_timeout 65;
 
