@@ -180,6 +180,7 @@ async function sendEmailCode() {
     }, 1000)
   } catch (e) {
     regError.value = e.response?.data?.detail || '验证码发送失败'
+    refreshCaptcha()
   } finally {
     emailCodeSending.value = false
   }

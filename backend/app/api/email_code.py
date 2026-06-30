@@ -84,13 +84,13 @@ def _send_email(to_email: str, code: str) -> bool:
     try:
         print(f"[DEBUG] Connecting to {smtp_host}:{smtp_port} (SSL={use_ssl})...")
         if use_ssl:
-            with smtplib.SMTP_SSL(smtp_host, smtp_port) as server:
+            with smtplib.SMTP_SSL(smtp_host, smtp_port, timeout=10) as server:
                 server.ehlo()
                 server.login(smtp_user, smtp_pass)
                 print(f"[DEBUG] SMTP SSL login successful, sending to {to_email}...")
                 server.send_message(msg)
         else:
-            with smtplib.SMTP(smtp_host, smtp_port) as server:
+            with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as server:
                 server.set_debuglevel(1)
                 server.ehlo()
                 server.starttls()
