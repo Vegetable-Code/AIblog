@@ -67,6 +67,36 @@
               <input v-model="regForm.password" type="password" placeholder="密码" required
                 class="w-full bg-slate-700/50 border border-slate-600/50 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 transition-colors" />
             </div>
+
+            <!-- Captcha -->
+            <div>
+              <div class="text-xs text-slate-400 mb-1.5">图形验证码</div>
+              <div class="flex gap-2">
+                <input v-model="regForm.captchaText" placeholder="输入验证码" required maxlength="4"
+                  class="flex-1 bg-slate-700/50 border border-slate-600/50 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 transition-colors uppercase" />
+                <button type="button" @click="refreshCaptcha"
+                  class="flex-shrink-0 rounded-xl overflow-hidden border border-slate-600/50 hover:border-cyan-500/50 transition-colors"
+                  :class="{'opacity-50 cursor-wait': captchaLoading}">
+                  <div v-if="captchaSvg" v-html="captchaSvg" class="w-[130px] h-[48px]"></div>
+                  <div v-else class="w-[130px] h-[48px] flex items-center justify-center text-xs text-slate-500">加载中</div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Email Code -->
+            <div>
+              <div class="text-xs text-slate-400 mb-1.5">邮箱验证码</div>
+              <div class="flex gap-2">
+                <input v-model="regForm.emailCode" placeholder="输入6位验证码" required maxlength="6"
+                  class="flex-1 bg-slate-700/50 border border-slate-600/50 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 transition-colors" />
+                <button type="button" @click="sendEmailCode" :disabled="emailCodeSending || emailCooldown > 0"
+                  class="flex-shrink-0 px-4 py-3 text-xs font-medium rounded-xl transition-all whitespace-nowrap"
+                  :class="emailCooldown > 0 ? 'bg-slate-700/50 text-slate-500' : 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/20'">
+                  {{ emailCooldown > 0 ? emailCooldown + 's' : (emailCodeSending ? '发送中...' : '获取验证码') }}
+                </button>
+              </div>
+            </div>
+
             <div v-if="regError" class="text-red-400 text-xs">{{ regError }}</div>
             <button type="submit" :disabled="regLoading"
               class="w-full py-3 bg-gradient-to-r from-cyan-500 to-violet-500 text-white text-sm font-medium rounded-xl hover:from-cyan-400 hover:to-violet-400 disabled:opacity-50 transition-all shadow-lg shadow-cyan-500/20">
