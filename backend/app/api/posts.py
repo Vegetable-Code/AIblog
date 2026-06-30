@@ -20,15 +20,46 @@ router = APIRouter(prefix="/posts", tags=["文章"])
 
 def _post_to_detail(post):
     cat = post.category
+    summary = post.summary or ""
+    if not summary and post.content:
+        summary = _generate_summary(post.content)
     return {
         "id": post.id, "title": post.title, "slug": post.slug,
-        "summary": post.summary or "", "content": post.content,
+        "summary": summary, "content": post.content,
         "content_html": post.content_html or "", "cover_image": post.cover_image or "",
         "is_published": post.is_published, "is_top": post.is_top, "views_count": post.views_count,
         "category": {"id": cat.id, "name": cat.name, "slug": cat.slug, "description": cat.description or "", "created_at": cat.created_at, "post_count": 0} if cat else None,
         "tags": [{"id": t.id, "name": t.name, "slug": t.slug, "created_at": t.created_at, "post_count": 0} for t in post.tags],
         "created_at": post.created_at, "updated_at": post.updated_at, "published_at": post.published_at,
     }
+
+def _generate_summary(content: str, max_chars: int = 150) -> str:
+    if not content:
+        return ""
+    text = re.sub(r"!\[.*?\]\(.*?\)", "", content)
+    text = re.sub(r"\[([^\]]*?)\]\(.*?\)", r"\1", text)
+    text = re.sub(r"```[\s\S]*?```", "", text)
+    text = re.sub(r"`.*?`", "", text)
+    text = re.sub(r"<[^>]+>", "", text)
+    text = re.sub(r"^#+\s*", "", text, flags=re.MULTILINE)
+    text = re.sub(r"\*\*(.*?)\*\*", r"\1", text)
+    text = re.sub(r"\*(.*?)\*", r"\1", text)
+    text = re.sub(r"^>\s*", "", text, flags=re.MULTILINE)
+    text = re.sub(r"\s+", " ", text).strip()
+    if not text:
+        return ""
+    if len(text) <= max_chars:
+        return text
+    truncated = text[:max_chars]
+    for sep in ("。", "！", "？", ".", "!", "?"):
+        idx = truncated.rfind(sep)
+        if idx > max_chars * 0.5:
+            return text[:idx + 1]
+    idx = truncated.rfind(" ")
+    if idx > max_chars * 0.5:
+        return text[:idx] + "..."
+    return truncated + "..."
+
 
 def _md_to_html(content: str) -> str:
     return markdown.markdown(content, extensions=["fenced_code", "codehilite", "tables", "toc"])
@@ -61,6 +92,8 @@ def get_post(slug: str, db: Session = Depends(get_db)):
 
     if not post.content_html and post.content:
         post.content_html = _md_to_html(post.content)
+    if not post.summary and post.content:
+        post.summary = _generate_summary(post.content)
 
     db.commit()
     return _post_to_detail(post)
@@ -69,7 +102,8 @@ def get_post(slug: str, db: Session = Depends(get_db)):
 def create_post(data: PostCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_superuser)):
     slug = data.slug or re.sub(r'-+', '-', re.sub(r'[^a-z0-9\u4e00-\u9fa5]+', '-', data.title.lower())).strip('-')
     content_html = _md_to_html(data.content)
-    post = Post(title=data.title, slug=slug, summary=data.summary or "", content=data.content,
+    summary = data.summary or _generate_summary(data.content)
+    post = Post(title=data.title, slug=slug, summary=summary, content=data.content,
                 content_html=content_html, cover_image=data.cover_image or "", is_published=data.is_published,
                 is_top=data.is_top or False, category_id=data.category_id, author_id=current_user.id,
                 published_at=datetime.now(timezone.utc) if data.is_published else None)
@@ -91,6 +125,8 @@ def update_post(post_id: int, data: PostUpdate, db: Session = Depends(get_db), c
         update_data["slug"] = re.sub(r'-+', '-', re.sub(r'[^a-z0-9\u4e00-\u9fa5]+', '-', data.title.lower())).strip('-') if data.title else f"post-{post_id}"
     if "content" in update_data:
         update_data["content_html"] = _md_to_html(data.content)
+        if "summary" not in update_data or not update_data["summary"]:
+            update_data["summary"] = _generate_summary(data.content)
     if "is_published" in update_data and data.is_published and not post.published_at:
         update_data["published_at"] = datetime.now(timezone.utc)
     if "tag_ids" in update_data:
