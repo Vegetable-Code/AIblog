@@ -5,6 +5,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr
 from ..core.config import settings
 from .sendgrid_email import send_via_sendgrid
+from .resend_email import send_via_resend
 
 _email_code_store: dict[str, dict] = {}
 
@@ -40,6 +41,9 @@ def _send_email(to_email: str, code: str) -> bool:
 
     if settings.SENDGRID_API_KEY:
         return send_via_sendgrid(to_email, code)
+
+    if settings.RESEND_API_KEY:
+        return send_via_resend(to_email, code)
 
     if not smtp_host or not smtp_user or not smtp_pass:
         print(f"[DEV] Email verification code for {to_email}: {code}")
