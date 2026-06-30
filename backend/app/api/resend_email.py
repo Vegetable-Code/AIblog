@@ -9,17 +9,17 @@ RESEND_API_URL = "https://api.resend.com/emails"
 
 def send_via_resend(to_email: str, code: str) -> bool:
     api_key = settings.RESEND_API_KEY
-    from_email = settings.SMTP_FROM_EMAIL or settings.SMTP_USER or "noreply@example.com"
+    from_email = "onboarding@resend.dev"
 
     if not api_key:
         logger.error("[RESEND] RESEND_API_KEY not set")
         return False
 
     payload = {
-        "from": f"博客系统 <{from_email}>",
+        "from": f"\u535a\u5ba2\u7cfb\u7edf <{from_email}>",
         "to": [to_email],
-        "subject": "博客注册验证码",
-        "html": "<p>您的验证码是: <b>" + code + "</b></p><p>5分钟内有效</p>",
+        "subject": "\u535a\u5ba2\u6ce8\u518c\u9a8c\u8bc1\u7801",
+        "html": "<p>\u60a8\u7684\u9a8c\u8bc1\u7801\u662f: <b>" + code + "</b></p><p>5\u5206\u949f\u5185\u6709\u6548</p>",
     }
 
     headers = {
