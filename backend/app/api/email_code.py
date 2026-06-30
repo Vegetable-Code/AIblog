@@ -4,6 +4,7 @@ from email.utils import make_msgid
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr
 from ..core.config import settings
+from .sendgrid_email import send_via_sendgrid
 
 _email_code_store: dict[str, dict] = {}
 
@@ -36,6 +37,9 @@ def _send_email(to_email: str, code: str) -> bool:
     import os
     has_pass = 'SET' if smtp_pass else 'NOT SET'
     print(f"[DEBUG] SMTP_HOST={smtp_host} SMTP_PORT={smtp_port} SMTP_USER={smtp_user} SMTP_PASS={has_pass} USE_SSL={use_ssl}")
+
+    if settings.SENDGRID_API_KEY:
+        return send_via_sendgrid(to_email, code)
 
     if not smtp_host or not smtp_user or not smtp_pass:
         print(f"[DEV] Email verification code for {to_email}: {code}")

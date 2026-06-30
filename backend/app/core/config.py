@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: Optional[str] = None
     SMTP_FROM_EMAIL: Optional[str] = None
     SMTP_USE_SSL: bool = False
+    SENDGRID_API_KEY: Optional[str] = None
 
     class Config:
         env_file = ".env"
