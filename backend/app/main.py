@@ -1,4 +1,6 @@
-﻿from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.staticfiles import StaticFiles
+import os
 from fastapi.middleware.cors import CORSMiddleware
 from .core.config import settings
 from .core.database import get_db
@@ -25,6 +27,12 @@ app.include_router(ai_search.router, prefix=api_prefix)
 app.include_router(captcha.router, prefix=api_prefix)
 app.include_router(import_pdf.router, prefix=api_prefix)
 app.include_router(detail_router, prefix=api_prefix)
+
+# Mount uploads directory (for local dev without Nginx)
+_uploads_dir = os.environ.get("UPLOAD_ROOT", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "uploads"))
+if os.path.exists(_uploads_dir):
+    app.mount("/uploads", StaticFiles(directory=_uploads_dir), name="uploads")
+
 
 @app.get("/")
 def root():

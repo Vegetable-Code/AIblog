@@ -12,12 +12,13 @@ from ..models.post import Post
 from ..models.tag import Tag
 from ..models.user import User
 from ..api.posts import _generate_summary
+from datetime import datetime, timezone
 
 router = APIRouter(prefix="/posts", tags=["文章"])
 
 ALLOWED_EXTENSIONS = {".pdf"}
 MAX_FILE_SIZE = 50 * 1024 * 1024
-UPLOAD_ROOT = os.environ.get("UPLOAD_ROOT", "/app/uploads")
+UPLOAD_ROOT = os.environ.get("UPLOAD_ROOT", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "uploads"))
 os.makedirs(UPLOAD_ROOT, exist_ok=True)
 
 def _extract_title_from_text(text: str) -> Optional[str]:
@@ -123,11 +124,11 @@ async def import_pdf(
             content=full_text,
             content_html=content_html,
             cover_image=page_images[0] if page_images else "",
-            is_published=False,
+            is_published=True,
             is_top=False,
             category_id=category_id,
             author_id=current_user.id,
-            published_at=None,
+            published_at=datetime.now(timezone.utc),
         )
 
         if parsed_tag_ids:

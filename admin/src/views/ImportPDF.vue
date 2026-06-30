@@ -1,10 +1,9 @@
-<template>
+﻿<template>
   <div>
     <h2 class="text-2xl font-bold mb-4">PDF 导入文章</h2>
     <el-row :gutter="24">
       <el-col :span="14">
         <el-card>
-          <!-- Upload Area -->
           <div
             class="upload-area"
             :class="{ 'dragover': dragging }"
@@ -45,29 +44,10 @@
             </el-form-item>
             <el-form-item>
               <el-button type="primary" :loading="importing" :disabled="!file" @click="handleImport" class="w-full">
-                {{ importing ? '导入中...' : '开始导入' }}
+                {{ importing ? '正在导入...' : '开始导入' }}
               </el-button>
             </el-form-item>
           </el-form>
-        </el-card>
-        <!-- Result Card -->
-        <el-card v-if="result" class="mt-4 border-emerald-200" shadow="none">
-          <template #header>
-            <div class="flex items-center gap-2 text-emerald-600">
-              <el-icon><CircleCheck /></el-icon>
-              <span class="font-medium">导入成功</span>
-            </div>
-          </template>
-          <div class="text-sm space-y-2">
-            <p><span class="text-slate-400">标题：</span>{{ result.title }}</p>
-            <p><span class="text-slate-400">页数：</span>{{ result.pages }} 页</p>
-            <p><span class="text-slate-400">字数：</span>{{ result.char_count }} 字</p>
-            <p class="text-xs text-slate-400 mt-2 line-clamp-3">{{ result.summary }}</p>
-          </div>
-          <div class="mt-4 flex gap-2">
-            <el-button size="small" type="primary" @click="handleEdit(result.id)">编辑文章</el-button>
-            <el-button size="small" @click="resetForm">继续导入</el-button>
-          </div>
         </el-card>
       </el-col>
     </el-row>
@@ -78,7 +58,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { UploadFilled, CircleCheck, Document } from '@element-plus/icons-vue'
+import { UploadFilled, Document } from '@element-plus/icons-vue'
 import { api } from '../stores/auth'
 
 const fileInput = ref(null)
@@ -89,12 +69,7 @@ const categories = ref([])
 const tags = ref([])
 const category_id = ref(null)
 const tag_ids = ref([])
-const result = ref(null)
 const router = useRouter()
-
-function handleEdit(id) {
-  router.push('/posts/' + id + '/edit')
-}
 
 onMounted(async () => {
   const [catRes, tagRes] = await Promise.all([api.get('/categories'), api.get('/tags')])
@@ -125,7 +100,6 @@ function validateAndSet(f) {
     return
   }
   file.value = f
-  result.value = null
 }
 
 async function handleImport() {
@@ -141,8 +115,10 @@ async function handleImport() {
       headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 120000,
     })
-    result.value = res.data
-    ElMessage.success('导入成功！')
+    ElMessage.success('导入成功！正在跳转到编辑页面...')
+    setTimeout(() => {
+      router.push('/posts/' + res.data.id + '/edit')
+    }, 800)
   } catch (e) {
     ElMessage.error(e.response?.data?.detail || '导入失败')
   } finally {
@@ -152,7 +128,6 @@ async function handleImport() {
 
 function resetForm() {
   file.value = null
-  result.value = null
   category_id.value = null
   tag_ids.value = []
 }

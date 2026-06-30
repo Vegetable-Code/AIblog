@@ -119,7 +119,6 @@ function renderMarkdown(md) {
 
 const renderedContent = computed(() => {
   if (post.value?.content_html) return post.value.content_html
-  if (post.value?.content_html) return post.value.content_html
   return renderMarkdown(post.value?.content || '')
 })
 

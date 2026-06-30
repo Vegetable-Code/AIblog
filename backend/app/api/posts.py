@@ -139,7 +139,10 @@ def update_post(post_id: int, data: PostUpdate, db: Session = Depends(get_db), c
     if "slug" in update_data and not update_data["slug"]:
         update_data["slug"] = re.sub(r'-+', '-', re.sub(r'[^a-z0-9\u4e00-\u9fa5]+', '-', data.title.lower())).strip('-') if data.title else f"post-{post_id}"
     if "content" in update_data:
-        update_data["content_html"] = _md_to_html(data.content)
+        # Never overwrite PDF-imported content_html (which contains page images)
+        has_pdf_images = post.content_html and '<div class="pdf-page">' in post.content_html
+        if not has_pdf_images and update_data["content"] != post.content:
+            update_data["content_html"] = _md_to_html(data.content)
         if "summary" not in update_data or not update_data["summary"]:
             update_data["summary"] = _generate_summary(data.content)
     if "is_published" in update_data and data.is_published and not post.published_at:
