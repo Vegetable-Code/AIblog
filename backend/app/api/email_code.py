@@ -6,6 +6,7 @@ from pydantic import BaseModel, EmailStr
 from ..core.config import settings
 from .sendgrid_email import send_via_sendgrid
 from .resend_email import send_via_resend
+from .brevo_email import send_via_brevo
 
 _email_code_store: dict[str, dict] = {}
 
@@ -44,6 +45,9 @@ def _send_email(to_email: str, code: str) -> bool:
 
     if settings.RESEND_API_KEY:
         return send_via_resend(to_email, code)
+
+    if settings.BREVO_API_KEY:
+        return send_via_brevo(to_email, code)
 
     if not smtp_host or not smtp_user or not smtp_pass:
         print(f"[DEV] Email verification code for {to_email}: {code}")

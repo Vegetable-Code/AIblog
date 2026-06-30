@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     SMTP_USE_SSL: bool = False
     SENDGRID_API_KEY: Optional[str] = None
     RESEND_API_KEY: Optional[str] = None
+    BREVO_API_KEY: Optional[str] = None
 
     class Config:
         env_file = ".env"
