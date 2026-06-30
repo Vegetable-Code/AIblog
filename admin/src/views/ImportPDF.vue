@@ -65,7 +65,7 @@
             <p class="text-xs text-slate-400 mt-2 line-clamp-3">{{ result.summary }}</p>
           </div>
           <div class="mt-4 flex gap-2">
-            <el-button size="small" type="primary" @click=".push('/posts/' + result.id + '/edit')">编辑文章</el-button>
+            <el-button size="small" type="primary" @click="handleEdit(result.id)">编辑文章</el-button>
             <el-button size="small" @click="resetForm">继续导入</el-button>
           </div>
         </el-card>
@@ -76,6 +76,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { UploadFilled, CircleCheck, Document } from '@element-plus/icons-vue'
 import { api } from '../stores/auth'
@@ -89,6 +90,11 @@ const tags = ref([])
 const category_id = ref(null)
 const tag_ids = ref([])
 const result = ref(null)
+const router = useRouter()
+
+function handleEdit(id) {
+  router.push('/posts/' + id + '/edit')
+}
 
 onMounted(async () => {
   const [catRes, tagRes] = await Promise.all([api.get('/categories'), api.get('/tags')])
@@ -136,7 +142,7 @@ async function handleImport() {
       timeout: 120000,
     })
     result.value = res.data
-    ElMessage.success(导入成功：)
+    ElMessage.success('导入成功！')
   } catch (e) {
     ElMessage.error(e.response?.data?.detail || '导入失败')
   } finally {
