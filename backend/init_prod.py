@@ -11,6 +11,11 @@ def init():
     print("Creating database tables...")
     Base.metadata.create_all(bind=engine)
     
+    # Ensure upload directory exists
+    upload_root = os.environ.get("UPLOAD_ROOT", "/app/uploads")
+    os.makedirs(upload_root, exist_ok=True)
+    print(f"Upload directory ready: {upload_root}")
+    
     db = SessionLocal()
     try:
         admin = db.query(User).filter(User.username == "admin").first()
