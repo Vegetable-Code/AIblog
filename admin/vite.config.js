@@ -3,6 +3,7 @@ import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
   plugins: [vue()],
+  base: '/admin/',
   server: {
     port: 3001,
     proxy: {
@@ -16,3 +17,4 @@ export default defineConfig({
     __API_URL__: JSON.stringify(process.env.API_URL || '/api/v1'),
   },
 })
+
