@@ -11,6 +11,7 @@ COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt uvicorn
 COPY backend/ .
 RUN mkdir -p /app/uploads
+ENV UPLOAD_ROOT=/app/uploads
 
 # Build frontend
 COPY frontend/package.json frontend/package-lock.json /tmp/frontend/
