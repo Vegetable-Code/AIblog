@@ -33,6 +33,21 @@ def _post_to_detail(post):
         "created_at": post.created_at, "updated_at": post.updated_at, "published_at": post.published_at,
     }
 
+def _post_to_list(post):
+    cat = post.category
+    summary = post.summary or ""
+    if not summary and post.content:
+        summary = _generate_summary(post.content)
+    return {
+        "id": post.id, "title": post.title, "slug": post.slug,
+        "summary": summary,
+        "cover_image": post.cover_image or "",
+        "is_published": post.is_published, "is_top": post.is_top, "views_count": post.views_count,
+        "category": {"id": cat.id, "name": cat.name, "slug": cat.slug, "description": cat.description or "", "created_at": cat.created_at, "post_count": 0} if cat else None,
+        "tags": [{"id": t.id, "name": t.name, "slug": t.slug, "created_at": t.created_at, "post_count": 0} for t in post.tags],
+        "created_at": post.created_at, "updated_at": post.updated_at, "published_at": post.published_at,
+    }
+
 def _generate_summary(content: str, max_chars: int = 150) -> str:
     if not content:
         return ""
@@ -80,7 +95,7 @@ def list_posts(page: int = Query(1, ge=1), page_size: int = Query(10, ge=1, le=5
     query = query.order_by(desc(Post.is_top), desc(Post.published_at), desc(Post.created_at))
     total = query.count()
     posts = query.offset((page - 1) * page_size).limit(page_size).all()
-    return {"items": [_post_to_detail(p) for p in posts], "total": total, "page": page, "page_size": page_size, "total_pages": (total + page_size - 1) // page_size}
+    return {"items": [_post_to_list(p) for p in posts], "total": total, "page": page, "page_size": page_size, "total_pages": (total + page_size - 1) // page_size}
 
 
 @router.get("/{slug}")
