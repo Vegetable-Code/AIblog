@@ -58,6 +58,10 @@ def get_post(slug: str, db: Session = Depends(get_db)):
     if not post:
         raise HTTPException(status_code=404, detail="文章不存在")
     post.views_count += 1
+
+    if not post.content_html and post.content:
+        post.content_html = _md_to_html(post.content)
+
     db.commit()
     return _post_to_detail(post)
 
