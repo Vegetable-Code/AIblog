@@ -1,30 +1,29 @@
-﻿FROM node:20-alpine AS frontend-builder
-WORKDIR /app
-COPY frontend/package.json frontend/package-lock.json* ./
-RUN npm ci
-COPY frontend/ .
-RUN npm run build
-
-FROM node:20-alpine AS admin-builder
-WORKDIR /app
-COPY admin/package.json admin/package-lock.json* ./
-RUN npm ci
-COPY admin/ .
-RUN npm run build
-
-FROM python:3.11-slim
+﻿FROM python:3.11-slim
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends gcc default-libmysqlclient-dev nginx && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends gcc default-libmysqlclient-dev nginx curl && rm -rf /var/lib/apt/lists/*
 
+# Install Node.js for building frontend
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && apt-get install -y nodejs && rm -rf /var/lib/apt/lists/*
+
+# Backend
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt uvicorn
-
 COPY backend/ .
 
-COPY --from=frontend-builder /app/dist /frontend-dist
-COPY --from=admin-builder /app/dist /admin-dist
+# Build frontend
+COPY frontend/package.json frontend/package-lock.json /tmp/frontend/
+RUN cd /tmp/frontend && npm ci
+COPY frontend/ /tmp/frontend/
+RUN cd /tmp/frontend && npm run build && cp -r dist /frontend-dist
 
+# Build admin
+COPY admin/package.json admin/package-lock.json /tmp/admin/
+RUN cd /tmp/admin && npm ci
+COPY admin/ /tmp/admin/
+RUN cd /tmp/admin && npm run build && cp -r dist /admin-dist
+
+# Nginx config
 RUN rm -f /etc/nginx/sites-enabled/default
 COPY <<'NGINX' /etc/nginx/nginx.conf
 events {
@@ -39,21 +38,18 @@ http {
     server {
         listen __PORT__;
 
-        # Frontend
         location / {
             root /frontend-dist;
             index index.html;
             try_files $uri $uri/ /index.html;
         }
 
-        # Admin
         location /admin {
             alias /admin-dist;
             index index.html;
             try_files $uri $uri/ /admin/index.html;
         }
 
-        # API
         location /api/ {
             proxy_pass http://127.0.0.1:8001;
             proxy_set_header Host $host;
@@ -69,7 +65,6 @@ COPY <<'SCRIPT' /start.sh
 #!/bin/bash
 cd /app
 python init_prod.py
-# Use 8000 for nginx, 8001 for uvicorn (same as railway PORT env)
 NGINX_PORT=${PORT:-8000}
 API_PORT=8001
 sed "s/__PORT__/${NGINX_PORT}/g" /etc/nginx/nginx.conf > /tmp/nginx.conf
@@ -81,5 +76,4 @@ SCRIPT
 
 RUN chmod +x /start.sh
 
-EXPOSE 8000
 CMD ["/start.sh"]
