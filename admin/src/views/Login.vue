@@ -1,14 +1,14 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-cyan-50/30 relative overflow-hidden">
+  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-cyan-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 relative overflow-hidden">
     <!-- Decorative -->
     <div class="absolute -top-40 -right-40 w-80 h-80 bg-cyan-400/10 rounded-full blur-3xl"></div>
     <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-violet-400/10 rounded-full blur-3xl"></div>
 
-    <el-card class="w-[420px] relative shadow-2xl shadow-cyan-500/5 border-0" body-style="padding: 40px">
+    <el-card class="w-[420px] relative shadow-2xl shadow-cyan-500/5 border-0 dark:border-slate-700 dark:bg-slate-800" body-style="padding: 40px">
       <div class="text-center mb-8">
         <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-violet-500 flex items-center justify-center text-white font-bold text-lg mx-auto mb-4 shadow-lg shadow-cyan-500/20">AI</div>
-        <h2 class="text-2xl font-bold text-slate-800">管理后台</h2>
-        <p class="text-sm text-slate-400 mt-1">AI工程师博客 · 内容管理系统</p>
+        <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">管理后台</h2>
+        <p class="text-sm text-slate-400 dark:text-slate-500 mt-1">AI工程师博客 · 内容管理系统</p>
       </div>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="0" size="large">
         <el-form-item prop="username">

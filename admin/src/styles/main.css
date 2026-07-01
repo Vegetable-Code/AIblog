@@ -1,4 +1,4 @@
-@tailwind base;
+﻿@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -70,3 +70,120 @@ body {
 .el-button--small { border-radius: 8px !important; }
 .el-input__wrapper { border-radius: 12px !important; }
 .el-select .el-input__wrapper { border-radius: 12px !important; }
+
+/* ===== Dark Mode Overrides ===== */
+html.dark body {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+html.dark .min-h-screen {
+  background-color: #0f172a !important;
+}
+
+html.dark .bg-white {
+  background-color: #1e293b !important;
+}
+
+html.dark .bg-slate-50 {
+  background-color: #0f172a !important;
+}
+
+html.dark .border-r,
+html.dark .border-b,
+html.dark .border-t,
+html.dark .border-slate-200,
+html.dark .border-slate-100 {
+  border-color: #334155 !important;
+}
+
+html.dark .text-slate-800 {
+  color: #f1f5f9 !important;
+}
+
+html.dark .text-slate-700 {
+  color: #cbd5e1 !important;
+}
+
+html.dark .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
+html.dark .text-slate-500 {
+  color: #64748b !important;
+}
+
+html.dark .el-card {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html.dark .el-menu {
+  background-color: #1e293b !important;
+}
+
+html.dark .el-menu-item:not(.is-active):hover {
+  background-color: #334155 !important;
+}
+
+html.dark .el-table th.el-table__cell {
+  background: #1e293b !important;
+  color: #94a3b8 !important;
+}
+
+html.dark .el-table__body-wrapper {
+  background-color: #1e293b !important;
+}
+
+html.dark .el-table__row {
+  background-color: #1e293b !important;
+}
+
+html.dark .el-table--striped .el-table__body tr.el-table__row--striped td {
+  background-color: #0f172a !important;
+}
+
+html.dark .el-pagination.is-background .btn-prev,
+html.dark .el-pagination.is-background .btn-next,
+html.dark .el-pagination.is-background .el-pager li {
+  background-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+html.dark .el-dialog {
+  background-color: #1e293b !important;
+}
+
+html.dark ::-webkit-scrollbar-track { background: #1e293b; }
+html.dark ::-webkit-scrollbar-thumb { background: #475569; }
+html.dark ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+html.dark .bg-gradient-to-br {
+  opacity: 0.9;
+}
+
+html.dark .el-alert--warning {
+  background-color: #292524 !important;
+  border-color: #78350f !important;
+  color: #fbbf24 !important;
+}
+
+html.dark .bg-gray-50 {
+  background-color: #1e293b !important;
+}
+
+html.dark .border-gray-200 {
+  border-color: #334155 !important;
+}
+
+html.dark .el-select-dropdown,
+html.dark .el-popper,
+html.dark .el-picker-panel {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html.dark .el-select-dropdown__item.hover,
+html.dark .el-select-dropdown__item:hover {
+  background-color: #334155 !important;
+}
