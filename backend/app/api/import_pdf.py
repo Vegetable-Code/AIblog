@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os, re, uuid
+import os, re, uuid, shutil
 from typing import Optional
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
@@ -12,14 +12,13 @@ from ..models.post import Post
 from ..models.tag import Tag
 from ..models.user import User
 from ..api.posts import _generate_summary
-from datetime import datetime, timezone
+from ..core import storage
 
-router = APIRouter(prefix="/posts", tags=["文章"])
+router = APIRouter(prefix="/posts", tags=["??"])
 
 ALLOWED_EXTENSIONS = {".pdf"}
 MAX_FILE_SIZE = 50 * 1024 * 1024
-UPLOAD_ROOT = os.environ.get("UPLOAD_ROOT", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "uploads"))
-os.makedirs(UPLOAD_ROOT, exist_ok=True)
+
 
 def _extract_title_from_text(text: str) -> Optional[str]:
     for line in text.split("\n"):
@@ -43,27 +42,28 @@ async def import_pdf(
 ):
     ext = os.path.splitext(file.filename or "")[1].lower()
     if ext not in ALLOWED_EXTENSIONS:
-        raise HTTPException(status_code=400, detail=f"不支持的文件格式：{ext}，仅支持 PDF")
+        raise HTTPException(status_code=400, detail=f"?????????{ext}???? PDF")
 
+    tmp_dir = None
     try:
         import fitz
 
         content_bytes = await file.read()
         if len(content_bytes) > MAX_FILE_SIZE:
-            raise HTTPException(status_code=400, detail="文件过大，最大支持 50MB")
+            raise HTTPException(status_code=400, detail="????????? 50MB")
 
         doc = fitz.open(stream=content_bytes, filetype="pdf")
         page_count = len(doc)
 
         uid = uuid.uuid4().hex
-        pdf_dir = os.path.join(UPLOAD_ROOT, "pdfs", uid)
-        os.makedirs(pdf_dir, exist_ok=True)
+        tmp_dir = storage.create_temp_dir()
 
-        pdf_path = os.path.join(pdf_dir, "original.pdf")
+        # Save original PDF to temp
+        pdf_path = os.path.join(tmp_dir, "original.pdf")
         with open(pdf_path, "wb") as f:
             f.write(content_bytes)
 
-        page_images = []
+        page_urls = []
         full_text_parts = []
         for page_num in range(page_count):
             page = doc[page_num]
@@ -72,25 +72,32 @@ async def import_pdf(
 
             pix = page.get_pixmap(dpi=150)
             img_filename = f"page-{page_num + 1}.png"
-            img_path = os.path.join(pdf_dir, img_filename)
+            img_path = os.path.join(tmp_dir, img_filename)
             pix.save(img_path)
-            page_images.append(f"/uploads/pdfs/{uid}/{img_filename}")
+
+            key = f"pdfs/{uid}/{img_filename}"
+            url = storage.upload_local(img_path, key)
+            page_urls.append(url)
 
         doc.close()
         full_text = "\n".join(full_text_parts).strip()
 
-        if not page_images:
-            raise HTTPException(status_code=400, detail="PDF 页面渲染失败")
+        if not page_urls:
+            raise HTTPException(status_code=400, detail="PDF ??????")
+
+        # Upload original PDF
+        pdf_key = f"pdfs/{uid}/original.pdf"
+        pdf_url = storage.upload_local(pdf_path, pdf_key)
 
         html_parts = []
-        for idx, img_url in enumerate(page_images):
+        for idx, img_url in enumerate(page_urls):
             html_parts.append('<div class="pdf-page">')
-            html_parts.append(f'  <img src="{img_url}" alt="第 {idx+1} 页" style="max-width:100%;height:auto;margin-bottom:1rem;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);" />')
+            html_parts.append(f'  <img src="{img_url}" alt="? {idx+1} ?" style="max-width:100%;height:auto;margin-bottom:1rem;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);" />')
             html_parts.append('</div>')
         html_parts.append('<p class="pdf-download" style="margin-top:2rem;padding-top:1rem;border-top:1px solid #e2e8f0;">')
-        html_parts.append(f'  <a href="/uploads/pdfs/{uid}/original.pdf" download style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 1.5rem;background:#1e293b;color:white;border-radius:8px;text-decoration:none;font-weight:500;">')
+        html_parts.append(f'  <a href="{pdf_url}" download style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 1.5rem;background:#1e293b;color:white;border-radius:8px;text-decoration:none;font-weight:500;">')
         html_parts.append('    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>')
-        html_parts.append('    下载原文 PDF')
+        html_parts.append('    ???? PDF')
         html_parts.append('  </a>')
         html_parts.append('</p>')
         content_html = "\n".join(html_parts)
@@ -101,6 +108,7 @@ async def import_pdf(
         if not title:
             title = _get_title_from_file(file.filename or "untitled")
 
+        from ..api.posts import _generate_summary
         summary = _generate_summary(full_text)
 
         slug = re.sub(r"-+", "-", re.sub(r"[^a-z0-9\u4e00-\u9fa5]+", "-", title.lower())).strip("-")
@@ -123,7 +131,7 @@ async def import_pdf(
             summary=summary,
             content=full_text,
             content_html=content_html,
-            cover_image=page_images[0] if page_images else "",
+            cover_image=page_urls[0] if page_urls else "",
             is_published=True,
             is_top=False,
             category_id=category_id,
@@ -140,7 +148,7 @@ async def import_pdf(
         db.refresh(post)
 
         return {
-            "message": "导入成功",
+            "message": "????",
             "id": post.id,
             "title": post.title,
             "slug": post.slug,
@@ -152,4 +160,7 @@ async def import_pdf(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"PDF 导入失败：{str(e)}")
+        raise HTTPException(status_code=500, detail=f"PDF ?????{str(e)}")
+    finally:
+        if tmp_dir and os.path.exists(tmp_dir):
+            shutil.rmtree(tmp_dir, ignore_errors=True)

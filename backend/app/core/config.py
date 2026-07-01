@@ -1,4 +1,4 @@
-﻿from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings
 from typing import Optional
 
 
@@ -24,6 +24,14 @@ class Settings(BaseSettings):
     SENDGRID_API_KEY: Optional[str] = None
     RESEND_API_KEY: Optional[str] = None
     BREVO_API_KEY: Optional[str] = None
+
+    # S3-compatible object storage (Cloudflare R2 / AWS S3 / MinIO)
+    S3_ENDPOINT: Optional[str] = None
+    S3_ACCESS_KEY_ID: Optional[str] = None
+    S3_SECRET_ACCESS_KEY: Optional[str] = None
+    S3_BUCKET_NAME: Optional[str] = None
+    S3_PUBLIC_URL: Optional[str] = None
+    S3_REGION: str = "auto"
 
     class Config:
         env_file = ".env"
