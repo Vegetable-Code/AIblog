@@ -1,8 +1,8 @@
-<template>
+﻿<template>
   <div class="fade-in-up">
     <div class="text-center py-8 mb-8">
       <h1 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">文章<span class="gradient-text">分类</span></h1>
-      <p class="text-slate-400">按主题浏览所有文章</p>
+      <p class="text-slate-400">{{ $t('categories.subtitle') }}</p>
     </div>
 
     <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -23,9 +23,9 @@
           <span class="text-xs text-cyan-400 font-medium opacity-0 group-hover:opacity-100 transition-opacity">浏览 &rarr;</span>
         </div>
         <h3 class="text-lg font-semibold text-white group-hover:text-cyan-400 transition-colors">{{ c.name }}</h3>
-        <p class="text-sm text-slate-500 mt-1 line-clamp-2">{{ c.description || '暂无描述' }}</p>
+        <p class="text-sm text-slate-500 mt-1 line-clamp-2">{{ c.description || $t('categories.no_description') }}</p>
         <div class="flex items-center gap-2 mt-4 text-xs text-slate-500">
-          <span class="px-2 py-1 rounded bg-slate-800 border border-slate-700">{{ c.post_count }} 篇文章</span>
+          <span class="px-2 py-1 rounded bg-slate-800 border border-slate-700">{{ $t('categories.post_count', { count: c.post_count }) }}</span>
         </div>
       </router-link>
     </div>

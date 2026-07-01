@@ -10,3 +10,13 @@ __pycache__
 *.log
 .vscode
 .idea
+# Uploads
+uploads/
+backend/uploads/
+
+# Temp / debug scripts
+_*.py
+_*.json
+_*.bat
+*.bat
+debug_*.py

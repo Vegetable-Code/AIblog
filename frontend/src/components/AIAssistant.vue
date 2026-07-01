@@ -22,8 +22,8 @@
             </svg>
           </div>
           <div>
-            <div class="text-sm font-semibold text-white">AI 助手</div>
-            <div class="text-[10px] text-slate-500">智能搜索 · 技术问答</div>
+            <div class="text-sm font-semibold text-white">{{ $t('ai_assistant.title') }}</div>
+            <div class="text-[10px] text-slate-500">{{ $t('ai_assistant.subtitle') }}</div>
           </div>
         </div>
         <button @click="close" class="w-7 h-7 rounded-lg bg-slate-700/50 hover:bg-slate-600/50 flex items-center justify-center text-slate-400 hover:text-white transition-all">
@@ -40,8 +40,8 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
             </svg>
           </div>
-          <p class="text-slate-400 text-sm">你好！我是 AI 助手 👋</p>
-          <p class="text-slate-500 text-xs mt-1">输入技术问题，帮你搜索相关文章</p>
+          <p class="text-slate-400 text-sm">你好！我是 {{ $t('ai_assistant.title') }} 👋</p>
+          <p class="text-slate-500 text-xs mt-1">{{ $t('ai_assistant.hint') }}</p>
           <div class="flex flex-wrap justify-center gap-2 mt-4">
             <button v-for="suggestion in suggestions" :key="suggestion" @click="ask(suggestion)"
               class="px-3 py-1.5 rounded-lg bg-slate-700/50 border border-slate-600/50 text-xs text-slate-300 hover:border-cyan-500/30 hover:text-cyan-400 transition-all">
@@ -64,7 +64,7 @@
               <div class="bg-slate-700/50 text-slate-200 text-sm rounded-2xl rounded-tl-md px-4 py-2.5">
                 <p>{{ msg.content }}</p>
                 <div v-if="msg.articles?.length" class="mt-3 space-y-2 border-t border-slate-600/50 pt-3">
-                  <p class="text-[10px] text-slate-500 uppercase tracking-wider font-medium">相关文章</p>
+                  <p class="text-[10px] text-slate-500 uppercase tracking-wider font-medium">{{ $t('ai_assistant.related_articles') }}</p>
                   <a v-for="article in msg.articles" :key="article.id"
                     :href="'/post/' + article.slug"
                     target="_blank"
@@ -127,8 +127,10 @@
 
 <script setup>
 import { ref, nextTick, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import axios from 'axios'
 
+const { t } = useI18n()
 const isOpen = ref(false)
 const input = ref('')
 const messages = ref([])
@@ -185,7 +187,7 @@ async function handleSubmit() {
   } catch (e) {
     messages.value.push({
       role: 'assistant',
-      content: '抱歉，服务出错了，请稍后再试。',
+      content: t('ai_assistant.error'),
       articles: [],
     })
   } finally {

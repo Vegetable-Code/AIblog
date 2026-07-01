@@ -1,14 +1,13 @@
-<template>
+﻿<template>
   <div>
     <div class="text-center py-12 mb-10" v-if="!loading && store.posts.length > 0">
       <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-6">
         <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-        共 {{ store.total }} 篇文章
+        {{ $t('home.articles_count', { count: store.total }) }} 
       </div>
-      <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
-        探索 <span class="gradient-text">AI 技术与工程</span>
+      <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight" v-html="$t('home.title')">
       </h1>
-      <p class="text-slate-400 text-lg max-w-xl mx-auto">分享深度学习、大模型、工程实践与前沿思考</p>
+      <p class="text-slate-400 text-lg max-w-xl mx-auto">{{ $t('home.subtitle') }}</p>
     </div>
 
     <div v-if="loading" class="space-y-6">
@@ -25,7 +24,7 @@
     </div>
 
     <div v-else-if="store.posts.length === 0" class="text-center py-20">
-      <p class="text-slate-500">暂无文章</p>
+      <p class="text-slate-500">{{ $t('home.no_articles') }}</p>
     </div>
 
     <div v-else class="space-y-5">
@@ -40,14 +39,14 @@
             </div>
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 mb-2">
-                <span v-if="post.is_top" class="px-2 py-0.5 rounded-md bg-gradient-to-r from-cyan-500/20 to-violet-500/20 text-cyan-400 text-xs font-medium border border-cyan-500/20">置顶</span>
+                <span v-if="post.is_top" class="px-2 py-0.5 rounded-md bg-gradient-to-r from-cyan-500/20 to-violet-500/20 text-cyan-400 text-xs font-medium border border-cyan-500/20">{{ $t('home.pinned') }}</span>
                 <span v-if="post.category" class="px-2.5 py-0.5 rounded-md bg-slate-800 text-slate-400 text-xs border border-slate-700">{{ post.category.name }}</span>
               </div>
               <h2 class="text-xl md:text-2xl font-bold text-white group-hover:text-cyan-400 transition-colors mb-2">{{ post.title }}</h2>
-              <p class="text-slate-400 text-sm leading-relaxed">{{ post.summary || '暂无摘要' }}</p>
+              <p class="text-slate-400 text-sm leading-relaxed">{{ post.summary || $t('home.no_summary') }}</p>
               <div class="flex items-center gap-4 mt-4 text-xs text-slate-500">
                 <span>{{ formatDate(post.published_at || post.created_at) }}</span>
-                <span>{{ post.views_count }} 次阅读</span>
+                <span>{{ $t('home.views', { count: post.views_count }) }}</span>
                 <span v-if="post.tags?.length" class="flex gap-1.5">
                   <span v-for="t in post.tags.slice(0, 3)" :key="t.id" class="px-2 py-0.5 rounded bg-slate-800 text-slate-500 border border-slate-700/50">#{{ t.name }}</span>
                 </span>
@@ -60,17 +59,18 @@
 
     <div v-if="totalPages > 1" class="flex justify-center items-center gap-2 mt-12">
       <button @click="goPage(page - 1)" :disabled="page <= 1"
-        class="px-4 py-2 rounded-xl text-sm bg-slate-800/60 border border-slate-700/50 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all">上一页</button>
+        class="px-4 py-2 rounded-xl text-sm bg-slate-800/60 border border-slate-700/50 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all">{{ $t('home.prev_page') }}</button>
       <button v-for="p in totalPages" :key="p" @click="goPage(p)"
         :class="['w-9 h-9 rounded-lg text-sm font-medium transition-all', p === page ? 'bg-gradient-to-br from-cyan-500 to-violet-500 text-white shadow-lg' : 'bg-slate-800/60 border border-slate-700/50 text-slate-400 hover:border-slate-600']">{{ p }}</button>
       <button @click="goPage(page + 1)" :disabled="page >= totalPages"
-        class="px-4 py-2 rounded-xl text-sm bg-slate-800/60 border border-slate-700/50 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all">下一页</button>
+        class="px-4 py-2 rounded-xl text-sm bg-slate-800/60 border border-slate-700/50 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all">{{ $t('home.next_page') }}</button>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useAppStore } from '../stores/app'
 
 const store = useAppStore()
@@ -98,7 +98,8 @@ async function loadPosts() {
 
 function formatDate(d) {
   if (!d) return ''
-  return new Date(d).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })
+  const { locale } = useI18n()
+  return new Date(d).toLocaleDateString(locale.value, { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
 onMounted(async () => {

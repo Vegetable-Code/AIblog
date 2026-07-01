@@ -1,8 +1,8 @@
-<template>
+﻿<template>
   <div class="fade-in-up" v-if="!loading && post">
     <!-- Breadcrumb -->
     <nav class="flex items-center gap-2 text-sm text-slate-500 mb-8">
-      <router-link to="/" class="hover:text-cyan-400 transition-colors">首页</router-link>
+      <router-link to="/" class="hover:text-cyan-400 transition-colors">{{ $t('post.breadcrumb_home') }}</router-link>
       <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
       <span class="text-slate-400" v-if="post.category">{{ post.category.name }}</span>
       <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
@@ -13,7 +13,7 @@
     <header class="mb-10">
       <div class="flex items-center gap-2 mb-4">
         <span v-if="post.is_top"
-          class="px-2.5 py-1 rounded-md bg-gradient-to-r from-cyan-500/20 to-violet-500/20 text-cyan-400 text-xs font-medium border border-cyan-500/20">置顶</span>
+          class="px-2.5 py-1 rounded-md bg-gradient-to-r from-cyan-500/20 to-violet-500/20 text-cyan-400 text-xs font-medium border border-cyan-500/20">{{ $t('post.pinned') }}</span>
         <span v-if="post.category"
           class="px-3 py-1 rounded-md bg-slate-800 text-slate-400 text-xs border border-slate-700">{{ post.category.name }}</span>
       </div>
@@ -29,7 +29,7 @@
         </span>
         <span class="flex items-center gap-1.5">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-          {{ post.views_count }} 次阅读
+          {{ $t('post.views', { count: post.views_count }) }}
         </span>
         <span v-if="post.tags?.length" class="flex items-center gap-1.5">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
@@ -48,7 +48,7 @@
 
     <!-- Tags at bottom -->
     <div class="flex flex-wrap gap-2 mt-10 pt-8 border-t border-slate-800" v-if="post.tags?.length">
-      <span class="text-sm text-slate-500 mr-2">标签：</span>
+      <span class="text-sm text-slate-500 mr-2">{{ $t('post.tags_label') }}</span>
       <span v-for="t in post.tags" :key="t.id" class="tag-pill bg-slate-800 text-slate-400 border border-slate-700">{{ t.name }}</span>
     </div>
 
@@ -56,7 +56,7 @@
     <div class="flex justify-between mt-12 pt-8 border-t border-slate-800">
       <router-link to="/" class="flex items-center gap-2 text-sm text-slate-500 hover:text-cyan-400 transition-colors">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-        返回首页
+        返回{{ $t('post.breadcrumb_home') }}
       </router-link>
     </div>
 
@@ -65,7 +65,7 @@
       <h2 class="text-xl font-bold text-white mb-6">
         <span class="flex items-center gap-2">
           <svg class="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-          评论
+          {{ $t('post.comments') }}
         </span>
       </h2>
       <CommentSection :post-id="post.id" />
@@ -88,8 +88,8 @@
 
   <!-- Not found -->
   <div v-else class="text-center py-20">
-    <p class="text-slate-500">文章不存在</p>
-    <router-link to="/" class="inline-block mt-4 text-cyan-400 hover:text-cyan-300">返回首页</router-link>
+    <p class="text-slate-500">{{ $t('post.not_found') }}</p>
+    <router-link to="/" class="inline-block mt-4 text-cyan-400 hover:text-cyan-300">返回{{ $t('post.breadcrumb_home') }}</router-link>
   </div>
 </template>
 

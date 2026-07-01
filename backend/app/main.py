@@ -6,6 +6,7 @@ from .core.config import settings
 from .core.database import get_db
 from .core.database import engine, Base
 from .api import auth, posts, categories, tags, comments, users, dashboard, ai_search, captcha
+from .api import i18n
 from .api import import_pdf
 from .api.posts import detail_router
 
@@ -25,6 +26,7 @@ app.include_router(users.router, prefix=api_prefix)
 app.include_router(dashboard.router, prefix=api_prefix)
 app.include_router(ai_search.router, prefix=api_prefix)
 app.include_router(captcha.router, prefix=api_prefix)
+app.include_router(i18n.router, prefix=api_prefix)
 app.include_router(import_pdf.router, prefix=api_prefix)
 app.include_router(detail_router, prefix=api_prefix)
 
