@@ -46,9 +46,24 @@
           </el-select>
         </el-form-item>
         <el-form-item label="标签">
-          <el-select v-model="form.tag_ids" multiple clearable placeholder="选择标签" class="w-full">
-            <el-option v-for="t in tags" :key="t.id" :label="t.name" :value="t.id" />
-          </el-select>
+          <div class="flex gap-2 w-full">
+            <el-select v-model="form.tag_ids" multiple filterable clearable placeholder="搜索或选择已有标签" class="flex-1">
+              <el-option v-for="t in tags" :key="t.id" :label="t.name" :value="t.id" />
+            </el-select>
+            <el-popover placement="bottom" trigger="click" width="240" @show="newTagName = ''">
+              <template #reference>
+                <el-button :icon="Plus" circle size="small" class="mt-[2px]" />
+              </template>
+              <div class="p-2">
+                <p class="text-sm text-slate-500 mb-2">新建标签</p>
+                <el-input v-model="newTagName" placeholder="输入标签名称" size="small" clearable
+                  @keyup.enter="confirmCreateTag" />
+                <el-button type="primary" size="small" class="mt-2 w-full" @click="confirmCreateTag" :loading="creatingTag">
+                  创建
+                </el-button>
+              </div>
+            </el-popover>
+          </div>
         </el-form-item>
         <el-form-item label="封面">
           <el-input v-model="form.cover_image" placeholder="封面图片链接" />
@@ -69,14 +84,17 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { Plus } from '@element-plus/icons-vue'
 import { api } from '../stores/auth'
 
 const route = useRoute()
 const router = useRouter()
 const isEdit = computed(() => !!route.params.id)
 const saving = ref(false)
+const creatingTag = ref(false)
 const categories = ref([])
 const tags = ref([])
+const newTagName = ref('')
 const contentHtml = ref('')
 const form = ref({ title: '', slug: '', summary: '', content: '', category_id: null, tag_ids: [], cover_image: '', is_published: false, is_top: false })
 
@@ -107,6 +125,30 @@ async function handleSave() {
   } catch (e) { ElMessage.error(e.response?.data?.detail || '保存失败') }
   finally { saving.value = false }
 }
+
+async function confirmCreateTag() {
+  const name = newTagName.value?.trim()
+  if (!name) return
+  if (tags.value.some(t => t.name === name)) {
+    const existing = tags.value.find(t => t.name === name)
+    if (existing && !form.value.tag_ids.includes(existing.id)) {
+      form.value.tag_ids.push(existing.id)
+    }
+    newTagName.value = ''
+    return
+  }
+  creatingTag.value = true
+  try {
+    const res = await api.post('/tags', { name, slug: name })
+    const tagRes = await api.get('/tags')
+    tags.value = tagRes.data
+    if (res.data?.id) form.value.tag_ids.push(res.data.id)
+    ElMessage.success('\u6807\u7b7e "' + name + '" \u5df2\u521b\u5efa')
+    newTagName.value = ''
+  } catch (e) { ElMessage.error(e.response?.data?.detail || '\u521b\u5efa\u6807\u7b7e\u5931\u8d25') }
+  finally { creatingTag.value = false }
+}
+
 </script>
 
 <style scoped>
