@@ -85,7 +85,8 @@
           <div v-for="d in dayNames" :key="'h-'+d" class="text-[10px] text-slate-500 font-medium py-1">{{ d }}</div>
           <div v-for="(day, idx) in calendarDays" :key="idx"
             class="text-xs py-1.5 rounded-lg transition-colors relative"
-            :class="dayClasses(day)">
+            :class="dayClasses(day)"
+            @click="selectDate(day)">
             <span v-if="day > 0">{{ day }}</span>
           </div>
         </div>
@@ -94,14 +95,18 @@
       <!-- Today's Schedule -->
       <div class="bg-slate-800/30 backdrop-blur-sm border border-slate-700/40 rounded-2xl p-4 overflow-hidden">
         <div class="flex items-center justify-between mb-3">
-          <h3 class="text-sm font-medium text-white">今日日程</h3>
-          <span class="text-xs text-slate-500">{{ todayStr }}</span>
+          <h3 class="text-sm font-medium text-white">{{ selectedDate === todayStr ? '今日日程' : '日程' }}</h3>
+          <span class="text-xs text-slate-500">{{ selectedDate }}</span>
         </div>
         <div v-if="!authStore.isLoggedIn" class="text-center py-4">
-          <p class="text-xs text-slate-500 mb-2">登录后可管理今日日程</p>
+          <p class="text-xs text-slate-500 mb-2">登录后可管理日程</p>
           <button @click="authStore.openLogin()" class="text-xs text-cyan-400 hover:text-cyan-300 transition-colors">立即登录</button>
         </div>
         <div v-else>
+          <div v-if="isPastDate" class="text-center py-2 mb-2 bg-slate-700/20 rounded-lg">
+            <svg class="w-3.5 h-3.5 inline text-slate-500 mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m0 0v2m0-2h2m-2 0H10m9.364-7.364A9 9 0 1112 3a9 9 0 017.364 4.636z"/></svg>
+            <span class="text-xs text-slate-500">已过去的日期不可操作日程</span>
+          </div>
           <div v-if="scheduleLoading" class="text-center py-4">
             <div class="w-5 h-5 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin mx-auto"></div>
           </div>
@@ -111,7 +116,7 @@
                 class="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-slate-700/30 group transition-colors">
                 <button @click="toggleSchedule(item)"
                   class="w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center transition-all"
-                  :class="item.is_completed ? 'bg-cyan-500 border-cyan-500' : 'border-slate-600 hover:border-cyan-400/50'">
+                  :class="isPastDate ? 'border-slate-700 cursor-not-allowed opacity-40' : (item.is_completed ? 'bg-cyan-500 border-cyan-500' : 'border-slate-600 hover:border-cyan-400/50')">
                   <svg v-if="item.is_completed" class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
                   </svg>
@@ -120,7 +125,7 @@
                   :class="item.is_completed ? 'line-through text-slate-600' : 'text-slate-300'">
                   {{ item.title }}
                 </span>
-                <button @click="deleteSchedule(item.id)"
+                <button v-if="!isPastDate" @click="deleteSchedule(item.id)"
                   class="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-red-400 transition-all flex-shrink-0">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -128,10 +133,10 @@
                 </button>
               </div>
               <div v-if="scheduleItems.length === 0" class="text-center py-3">
-                <p class="text-xs text-slate-600">今天没有日程安排</p>
+                <p class="text-xs text-slate-600">{{ selectedDate === todayStr ? '今天没有日程安排' : '该日期没有日程安排' }}</p>
               </div>
             </div>
-            <form @submit.prevent="addSchedule" class="flex gap-1.5">
+            <form v-if="!isPastDate" @submit.prevent="addSchedule" class="flex gap-1.5">
               <input v-model="newTitle" type="text" placeholder="添加日程..."
                 class="flex-1 min-w-0 bg-slate-700/50 border border-slate-600/50 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 transition-colors"
                 maxlength="100" />
@@ -140,6 +145,9 @@
                 添加
               </button>
             </form>
+            <div v-else class="text-center py-2 mt-2 border-t border-slate-700/30 pt-2">
+              <span class="text-xs text-slate-600">只读模式</span>
+            </div>
           </template>
         </div>
       </div>
@@ -203,11 +211,15 @@ function dayClasses(day) {
   const dateStr = calYear.value + '-' + String(calMonth.value).padStart(2, '0') + '-' + String(day).padStart(2, '0')
   const hasArticle = articleDates.value.some(a => a.date === dateStr)
   const isToday = dateStr === new Date().toISOString().slice(0, 10)
+  const isSelected = dateStr === selectedDate.value
+  const isPast = dateStr < new Date().toISOString().slice(0, 10)
   const classes = []
   if (isToday) classes.push('bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30')
-  else if (hasArticle) classes.push('bg-violet-500/10 text-violet-300 hover:bg-violet-500/20')
-  else classes.push('text-slate-400 hover:bg-slate-700/30')
-  if (hasArticle) classes.push('cursor-pointer')
+  else if (isSelected) classes.push('bg-cyan-500/10 text-cyan-300 border border-cyan-500/20')
+  else if (hasArticle) classes.push('bg-violet-500/10 text-violet-300')
+  else classes.push('text-slate-400')
+  if (isPast && !isToday) classes.push('opacity-40')
+  classes.push('hover:bg-slate-700/30 cursor-pointer')
   return classes.join(' ')
 }
 
@@ -336,6 +348,7 @@ const authStore = useAuthStore()
 const scheduleItems = ref([])
 const scheduleLoading = ref(false)
 const newTitle = ref('')
+const selectedDate = ref('')
 const todayStr = computed(() => {
   const d = new Date()
   return d.getFullYear() + '-' +
@@ -343,11 +356,21 @@ const todayStr = computed(() => {
     String(d.getDate()).padStart(2, '0')
 })
 
-async function fetchTodaySchedules() {
-  if (!authStore.isLoggedIn) return
+
+const isPastDate = computed(() => selectedDate.value < todayStr.value)
+function selectDate(day) {
+  if (day <= 0) return
+  const ds = calYear.value + '-' + String(calMonth.value).padStart(2, '0') + '-' + String(day).padStart(2, '0')
+  selectedDate.value = ds
+}
+
+async function fetchSchedules() {
+  if (!authStore.isLoggedIn || !selectedDate.value) return
   scheduleLoading.value = true
   try {
-    const res = await api_schedule.get('/schedules/today')
+    const params = selectedDate.value === todayStr.value ? {} : { date_str: selectedDate.value }
+    const url = selectedDate.value === todayStr.value ? '/schedules/today' : '/schedules'
+    const res = await api_schedule.get(url, { params })
     scheduleItems.value = res.data
   } catch { scheduleItems.value = [] }
   finally { scheduleLoading.value = false }
@@ -356,8 +379,9 @@ async function fetchTodaySchedules() {
 async function addSchedule() {
   const title = newTitle.value.trim()
   if (!title) return
+  if (isPastDate.value) return
   try {
-    const res = await api_schedule.post('/schedules', { date: todayStr.value, title })
+    const res = await api_schedule.post('/schedules', { date: selectedDate.value, title })
     scheduleItems.value.push(res.data)
     newTitle.value = ''
   } catch (e) {
@@ -369,16 +393,19 @@ async function addSchedule() {
 }
 
 async function toggleSchedule(item) {
+  if (isPastDate.value) return
   const updated = await api_schedule.put('/schedules/' + item.id, { is_completed: !item.is_completed })
   Object.assign(item, updated.data)
 }
 
 async function deleteSchedule(id) {
+  if (isPastDate.value) return
   await api_schedule.delete('/schedules/' + id)
   scheduleItems.value = scheduleItems.value.filter(s => s.id !== id)
 }
 
-watch(() => authStore.isLoggedIn, (val) => { if (val) fetchTodaySchedules() })
+watch(() => authStore.isLoggedIn, (val) => { if (val) fetchSchedules() })
+watch(selectedDate, () => { if (authStore.isLoggedIn) fetchSchedules() })
 
 // Pagination
 function goPage(p) {
@@ -398,6 +425,7 @@ function formatDate(d) {
 }
 
 onMounted(async () => {
+  selectedDate.value = todayStr.value
   await Promise.all([store.fetchCategories(), store.fetchTags(), loadPosts(), fetchCalendar()])
 })
 </script>
