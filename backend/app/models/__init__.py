@@ -1,6 +1,8 @@
-from .user import User
+﻿from .user import User
 from .category import Category
 from .tag import Tag
 from .post import Post
 from .comment import Comment
 from .post_tag import post_tags
+
+from .schedule import Schedule

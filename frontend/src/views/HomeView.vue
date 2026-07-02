@@ -91,6 +91,59 @@
         </div>
       </div>
 
+      <!-- Today's Schedule -->
+      <div class="bg-slate-800/30 backdrop-blur-sm border border-slate-700/40 rounded-2xl p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-medium text-white">今日日程</h3>
+          <span class="text-xs text-slate-500">{{ todayStr }}</span>
+        </div>
+        <div v-if="!authStore.isLoggedIn" class="text-center py-4">
+          <p class="text-xs text-slate-500 mb-2">登录后可管理今日日程</p>
+          <button @click="authStore.openLogin()" class="text-xs text-cyan-400 hover:text-cyan-300 transition-colors">立即登录</button>
+        </div>
+        <div v-else>
+          <div v-if="scheduleLoading" class="text-center py-4">
+            <div class="w-5 h-5 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin mx-auto"></div>
+          </div>
+          <template v-else>
+            <div class="space-y-1.5 max-h-48 overflow-y-auto mb-3">
+              <div v-for="item in scheduleItems" :key="item.id"
+                class="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-slate-700/30 group transition-colors">
+                <button @click="toggleSchedule(item)"
+                  class="w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center transition-all"
+                  :class="item.is_completed ? 'bg-cyan-500 border-cyan-500' : 'border-slate-600 hover:border-cyan-400/50'">
+                  <svg v-if="item.is_completed" class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                  </svg>
+                </button>
+                <span class="text-xs flex-1 truncate transition-all"
+                  :class="item.is_completed ? 'line-through text-slate-600' : 'text-slate-300'">
+                  {{ item.title }}
+                </span>
+                <button @click="deleteSchedule(item.id)"
+                  class="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-red-400 transition-all flex-shrink-0">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
+              </div>
+              <div v-if="scheduleItems.length === 0" class="text-center py-3">
+                <p class="text-xs text-slate-600">今天没有日程安排</p>
+              </div>
+            </div>
+            <form @submit.prevent="addSchedule" class="flex gap-1.5">
+              <input v-model="newTitle" type="text" placeholder="添加日程..."
+                class="flex-1 bg-slate-700/50 border border-slate-600/50 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 transition-colors"
+                maxlength="100" />
+              <button type="submit" :disabled="!newTitle.trim()"
+                class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-gradient-to-r from-cyan-500 to-violet-500 text-white disabled:opacity-30 transition-opacity flex-shrink-0">
+                添加
+              </button>
+            </form>
+          </template>
+        </div>
+      </div>
+
       <!-- Tag Cloud -->
       <div class="bg-slate-800/30 backdrop-blur-sm border border-slate-700/40 rounded-2xl p-4 overflow-hidden">
         <h3 class="text-sm font-medium text-white mb-3">标签云</h3>
@@ -115,6 +168,7 @@
 import { ref, onMounted, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '../stores/app'
+import { useAuthStore } from '../stores/auth'
 import axios from 'axios'
 
 const api = axios.create({ baseURL: '/api/v1' })
@@ -270,6 +324,61 @@ function endDrag() {
 }
 
 watch(() => store.tags.length, (n) => { if (n > 0) initTagPositions() }, { immediate: true })
+
+// Schedule
+const api_schedule = axios.create({ baseURL: '/api/v1' })
+api_schedule.interceptors.request.use(config => {
+  const token = localStorage.getItem('frontend_token')
+  if (token) config.headers.Authorization = 'Bearer ' + token
+  return config
+})
+const authStore = useAuthStore()
+const scheduleItems = ref([])
+const scheduleLoading = ref(false)
+const newTitle = ref('')
+const todayStr = computed(() => {
+  const d = new Date()
+  return d.getFullYear() + '-' +
+    String(d.getMonth() + 1).padStart(2, '0') + '-' +
+    String(d.getDate()).padStart(2, '0')
+})
+
+async function fetchTodaySchedules() {
+  if (!authStore.isLoggedIn) return
+  scheduleLoading.value = true
+  try {
+    const res = await api_schedule.get('/schedules/today')
+    scheduleItems.value = res.data
+  } catch { scheduleItems.value = [] }
+  finally { scheduleLoading.value = false }
+}
+
+async function addSchedule() {
+  const title = newTitle.value.trim()
+  if (!title) return
+  try {
+    const res = await api_schedule.post('/schedules', { date: todayStr.value, title })
+    scheduleItems.value.push(res.data)
+    newTitle.value = ''
+  } catch (e) {
+    if (e.response?.status === 401) {
+      authStore.logout()
+      authStore.openLogin()
+    }
+  }
+}
+
+async function toggleSchedule(item) {
+  const updated = await api_schedule.put('/schedules/' + item.id, { is_completed: !item.is_completed })
+  Object.assign(item, updated.data)
+}
+
+async function deleteSchedule(id) {
+  await api_schedule.delete('/schedules/' + id)
+  scheduleItems.value = scheduleItems.value.filter(s => s.id !== id)
+}
+
+watch(() => authStore.isLoggedIn, (val) => { if (val) fetchTodaySchedules() })
 
 // Pagination
 function goPage(p) {

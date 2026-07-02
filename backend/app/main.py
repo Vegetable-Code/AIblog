@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException
+﻿from fastapi import FastAPI, Depends, HTTPException
 from fastapi.staticfiles import StaticFiles
 import os
 from fastapi.middleware.cors import CORSMiddleware
@@ -6,7 +6,7 @@ from .core.config import settings
 from .core.database import get_db
 from .core.database import engine, Base
 from .api import auth, posts, categories, tags, comments, users, dashboard, ai_search, captcha
-from .api import i18n
+from .api import i18n, schedules
 from .api import import_pdf
 from .api.posts import detail_router
 
@@ -27,6 +27,7 @@ app.include_router(dashboard.router, prefix=api_prefix)
 app.include_router(ai_search.router, prefix=api_prefix)
 app.include_router(captcha.router, prefix=api_prefix)
 app.include_router(i18n.router, prefix=api_prefix)
+app.include_router(schedules.router, prefix=api_prefix)
 app.include_router(import_pdf.router, prefix=api_prefix)
 app.include_router(detail_router, prefix=api_prefix)
 
