@@ -92,7 +92,7 @@
       </div>
 
       <!-- Today's Schedule -->
-      <div class="bg-slate-800/30 backdrop-blur-sm border border-slate-700/40 rounded-2xl p-4">
+      <div class="bg-slate-800/30 backdrop-blur-sm border border-slate-700/40 rounded-2xl p-4 overflow-hidden">
         <div class="flex items-center justify-between mb-3">
           <h3 class="text-sm font-medium text-white">今日日程</h3>
           <span class="text-xs text-slate-500">{{ todayStr }}</span>
@@ -133,7 +133,7 @@
             </div>
             <form @submit.prevent="addSchedule" class="flex gap-1.5">
               <input v-model="newTitle" type="text" placeholder="添加日程..."
-                class="flex-1 bg-slate-700/50 border border-slate-600/50 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 transition-colors"
+                class="flex-1 min-w-0 bg-slate-700/50 border border-slate-600/50 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 transition-colors"
                 maxlength="100" />
               <button type="submit" :disabled="!newTitle.trim()"
                 class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-gradient-to-r from-cyan-500 to-violet-500 text-white disabled:opacity-30 transition-opacity flex-shrink-0">
