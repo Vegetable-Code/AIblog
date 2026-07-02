@@ -429,6 +429,15 @@ onMounted(async () => {
   await Promise.all([store.fetchCategories(), store.fetchTags(), loadPosts(), fetchCalendar()])
   await nextTick()
   initTagPositions()
+  // 确保 auth 就绪后获取今日日程（修复刷新后日程不显示）
+  if (authStore.token) {
+    if (!authStore.user) {
+      await authStore.fetchUser()
+    }
+    if (authStore.isLoggedIn) {
+      fetchSchedules()
+    }
+  }
 })
 </script>
 
