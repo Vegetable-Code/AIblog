@@ -171,6 +171,22 @@ def batch_delete_posts(data: BatchDeleteRequest, db: Session = Depends(get_db), 
     db.commit()
     return {"message": f"成功删除 {deleted} 篇文章", "deleted_count": deleted}
 
+# Calendar endpoint - returns dates with article counts for a given month
+@router.get("/calendar/dates")
+def get_calendar_dates(year: int = Query(...), month: int = Query(...), db: Session = Depends(get_db)):
+    from sqlalchemy import func, extract
+    posts = db.query(
+        func.date(Post.published_at).label('pub_date'),
+        func.count(Post.id).label('count')
+    )\
+        .filter(Post.is_published == True)\
+        .filter(Post.published_at.isnot(None))\
+        .filter(extract('year', Post.published_at) == year)\
+        .filter(extract('month', Post.published_at) == month)\
+        .group_by(func.date(Post.published_at))\
+        .all()
+    return [{"date": str(p.pub_date), "count": p.count} for p in posts]
+
 # Separate router for ID-based lookup (avoids conflict with /{slug})
 detail_router = APIRouter(prefix="/posts", tags=["文章"])
 
