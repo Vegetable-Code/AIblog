@@ -173,7 +173,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '../stores/app'
 import { useAuthStore } from '../stores/auth'
@@ -427,6 +427,8 @@ function formatDate(d) {
 onMounted(async () => {
   selectedDate.value = todayStr.value
   await Promise.all([store.fetchCategories(), store.fetchTags(), loadPosts(), fetchCalendar()])
+  await nextTick()
+  initTagPositions()
 })
 </script>
 
