@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
     <!-- Main content: articles list -->
     <div class="lg:col-span-3">
@@ -92,16 +92,19 @@
       </div>
 
       <!-- Tag Cloud -->
-      <div class="bg-slate-800/30 backdrop-blur-sm border border-slate-700/40 rounded-2xl p-4">
-        <h3 class="text-sm font-medium text-white mb-3">\u6807\u7c7b\u4e91</h3>
-        <div class="flex flex-wrap gap-2 justify-center">
-          <router-link v-for="t in store.tags" :key="t.id"
-            :to="'/tag/' + t.slug"
-            class="inline-block rounded-lg transition-all duration-300 hover:opacity-100 hover:scale-110"
-            :class="tagCloudClass(t)"
-            :style="tagCloudStyle(t)">
-            {{ t.name }}
-          </router-link>
+      <div class="bg-slate-800/30 backdrop-blur-sm border border-slate-700/40 rounded-2xl p-4 overflow-hidden">
+        <h3 class="text-sm font-medium text-white mb-3">标签云</h3>
+        <div ref="cloudContainer" class="relative" style="height:280px">
+          <template v-for="t in store.tags" :key="t.id">
+            <router-link v-if="tagPositions[t.id]"
+              :to="'/tag/' + t.slug"
+              class="absolute rounded-lg px-3 py-1.5 select-none cursor-grab active:cursor-grabbing transition-shadow duration-200 hover:z-20 hover:shadow-lg hover:shadow-cyan-500/15"
+              :class="tagCloudClass(t)"
+              :style="getTagStyle(t)"
+              @pointerdown.prevent="startDrag(t.id, $event)">
+              {{ t.name }}
+            </router-link>
+          </template>
         </div>
       </div>
     </div>
@@ -178,7 +181,11 @@ function nextMonth() {
   fetchCalendar()
 }
 
-// Tag cloud
+// Interactive tag cloud
+const cloudContainer = ref(null)
+const tagPositions = ref({})
+const dragging = ref({ id: null, startX: 0, startY: 0, offsetX: 0, offsetY: 0, origRect: null, origTransform: null })
+
 function tagCountMax() {
   if (!store.tags.length) return 1
   return Math.max(...store.tags.map(t => t.post_count || 1), 1)
@@ -186,16 +193,83 @@ function tagCountMax() {
 
 function tagCloudClass(t) {
   const ratio = (t.post_count || 1) / tagCountMax()
-  if (ratio > 0.7) return 'text-cyan-300'
-  if (ratio > 0.4) return 'text-violet-300'
-  return 'text-slate-400'
+  if (ratio > 0.7) return 'text-cyan-300 bg-cyan-500/5 border border-cyan-500/10'
+  if (ratio > 0.4) return 'text-violet-300 bg-violet-500/5 border border-violet-500/10'
+  return 'text-slate-400 bg-slate-800/50 border border-slate-700/30'
 }
 
-function tagCloudStyle(t) {
+function getTagStyle(t) {
+  const pos = tagPositions.value[t.id]
+  if (!pos) return { display: 'none' }
   const ratio = (t.post_count || 1) / tagCountMax()
   const size = 0.75 + ratio * 0.65
-  return { fontSize: size + 'rem', opacity: 0.5 + ratio * 0.5 }
+  const isDragging = dragging.value.id === t.id
+  return {
+    left: pos.x + 'px',
+    top: pos.y + 'px',
+    fontSize: size + 'rem',
+    opacity: 0.55 + ratio * 0.45,
+    animation: isDragging ? 'none' : 'tagFloat ' + (3 + ratio * 3) + 's ease-in-out infinite',
+    animationDelay: pos.delay + 's',
+    zIndex: isDragging ? 30 : 10,
+    transform: isDragging ? 'scale(1.15)' : 'scale(1)',
+  }
 }
+
+function initTagPositions() {
+  if (!store.tags.length) return
+  const container = cloudContainer.value
+  if (!container) return
+  const cw = container.clientWidth || 220
+  const ch = container.clientHeight || 280
+  const maxCount = tagCountMax()
+  const posMap = {}
+  store.tags.forEach((t) => {
+    const ratio = (t.post_count || 1) / maxCount
+    const tagW = 60 + ratio * 50
+    const tagH = 28 + ratio * 12
+    let x, y, attempts = 0
+    do {
+      x = Math.random() * Math.max(cw - tagW - 10, 60)
+      y = Math.random() * Math.max(ch - tagH - 10, 80)
+      attempts++
+    } while (attempts < 50 && Object.values(posMap).some(p => Math.abs(p.x - x) < 50 && Math.abs(p.y - y) < 30))
+    posMap[t.id] = { x: Math.max(0, x), y: Math.max(0, y), delay: Math.random() * 4 }
+  })
+  tagPositions.value = posMap
+}
+
+function startDrag(id, event) {
+  const el = event.currentTarget
+  dragging.value = {
+    id,
+    offsetX: event.clientX - el.getBoundingClientRect().left,
+    offsetY: event.clientY - el.getBoundingClientRect().top,
+  }
+  document.addEventListener('pointermove', onDrag)
+  document.addEventListener('pointerup', endDrag)
+}
+
+function onDrag(event) {
+  if (!dragging.value.id) return
+  const containerRect = cloudContainer.value.getBoundingClientRect()
+  const pos = tagPositions.value[dragging.value.id]
+  if (!pos) return
+  const maxX = Math.max(0, cloudContainer.value.clientWidth - 60)
+  const maxY = Math.max(0, cloudContainer.value.clientHeight - 28)
+  pos.x = Math.max(0, Math.min(event.clientX - containerRect.left - dragging.value.offsetX, maxX))
+  pos.y = Math.max(0, Math.min(event.clientY - containerRect.top - dragging.value.offsetY, maxY))
+  tagPositions.value = { ...tagPositions.value }
+}
+
+function endDrag() {
+  dragging.value.id = null
+  document.removeEventListener('pointermove', onDrag)
+  document.removeEventListener('pointerup', endDrag)
+  tagPositions.value = { ...tagPositions.value }
+}
+
+watch(() => store.tags.length, (n) => { if (n > 0) initTagPositions() }, { immediate: true })
 
 // Pagination
 function goPage(p) {
@@ -218,3 +292,10 @@ onMounted(async () => {
   await Promise.all([store.fetchCategories(), store.fetchTags(), loadPosts(), fetchCalendar()])
 })
 </script>
+
+<style scoped>
+@keyframes tagFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+</style>
