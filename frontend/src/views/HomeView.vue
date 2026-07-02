@@ -210,9 +210,9 @@ function dayClasses(day) {
   if (day <= 0) return 'invisible'
   const dateStr = calYear.value + '-' + String(calMonth.value).padStart(2, '0') + '-' + String(day).padStart(2, '0')
   const hasArticle = articleDates.value.some(a => a.date === dateStr)
-  const isToday = dateStr === new Date().toISOString().slice(0, 10)
+  const isToday = dateStr === todayStr.value
   const isSelected = dateStr === selectedDate.value
-  const isPast = dateStr < new Date().toISOString().slice(0, 10)
+  const isPast = dateStr < todayStr.value
   const classes = []
   if (isToday) classes.push('bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30')
   else if (isSelected) classes.push('bg-cyan-500/10 text-cyan-300 border border-cyan-500/20')
@@ -368,9 +368,7 @@ async function fetchSchedules() {
   if (!authStore.isLoggedIn || !selectedDate.value) return
   scheduleLoading.value = true
   try {
-    const params = selectedDate.value === todayStr.value ? {} : { date_str: selectedDate.value }
-    const url = selectedDate.value === todayStr.value ? '/schedules/today' : '/schedules'
-    const res = await api_schedule.get(url, { params })
+    const res = await api_schedule.get('/schedules', { params: { date_str: selectedDate.value } })
     scheduleItems.value = res.data
   } catch { scheduleItems.value = [] }
   finally { scheduleLoading.value = false }
