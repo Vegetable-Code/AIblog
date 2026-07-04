@@ -93,7 +93,7 @@ const pageTitle = computed(() => {
     '/profile': '個人設置',
   }
   if (route.path.match(/^\/posts\/\d+\/edit$/)) return '編輯文章'
-  if (route.path.match(/^\\/projects/)) return '作品管理'
+  if (route.path.match(/^\/projects/)) return '作品管理'
   return titles[route.path] || '管理後台'
 })
 
