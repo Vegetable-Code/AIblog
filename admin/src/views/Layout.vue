@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <el-container class="min-h-screen bg-slate-50">
     <el-aside width="240px" class="bg-white border-r border-slate-200 flex flex-col sticky top-0 h-screen">
       <div class="h-16 flex items-center gap-3 px-5 border-b border-slate-100 flex-shrink-0">
@@ -26,6 +26,7 @@
         <el-menu-item index="/posts" class="mx-2 rounded-xl my-0.5 h-10"><el-icon><Document /></el-icon><span>文章管理</span></el-menu-item>
         <el-menu-item index="/categories" class="mx-2 rounded-xl my-0.5 h-10"><el-icon><Folder /></el-icon><span>分類管理</span></el-menu-item>
         <el-menu-item index="/tags" class="mx-2 rounded-xl my-0.5 h-10"><el-icon><PriceTag /></el-icon><span>標籤管理</span></el-menu-item>
+        <el-menu-item index="/projects" class="mx-2 rounded-xl my-0.5 h-10"><el-icon><Grid /></el-icon><span>作品管理</span></el-menu-item>
         <el-menu-item index="/comments" class="mx-2 rounded-xl my-0.5 h-10"><el-icon><ChatDotSquare /></el-icon><span>評論管理</span></el-menu-item>
         <el-menu-item index="/users" class="mx-2 rounded-xl my-0.5 h-10"><el-icon><User /></el-icon><span>用戶管理</span></el-menu-item>
         <el-menu-item index="/profile" class="mx-2 rounded-xl my-0.5 h-10"><el-icon><Setting /></el-icon><span>個人設置</span></el-menu-item>
@@ -86,11 +87,13 @@ const pageTitle = computed(() => {
     '/posts/create': '新建文章',
     '/categories': '分類管理',
     '/tags': '標籤管理',
+    '/projects': '作品管理',
     '/comments': '評論管理',
     '/users': '用戶管理',
     '/profile': '個人設置',
   }
   if (route.path.match(/^\/posts\/\d+\/edit$/)) return '編輯文章'
+  if (route.path.match(/^\\/projects/)) return '作品管理'
   return titles[route.path] || '管理後台'
 })
 
