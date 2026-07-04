@@ -61,6 +61,7 @@
       </div>
     </footer>
     <AIAssistant />
+    <CompanionPet />
     <LoginModal />
     <Toast ref="toastRef" />
 
@@ -91,6 +92,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import AIAssistant from './components/AIAssistant.vue'
+import CompanionPet from './components/CompanionPet.vue'
 import LoginModal from './components/LoginModal.vue'
 import Toast from './components/Toast.vue'
 import { useAuthStore } from './stores/auth'
