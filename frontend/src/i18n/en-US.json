@@ -1,11 +1,10 @@
-﻿{
+{
   "nav.home": "Home",
   "nav.categories": "Categories",
   "nav.about": "About",
   "nav.login": "Login",
   "nav.logout": "Logout",
   "nav.language": "Language",
-
   "home.title": "Exploring AI Technology & Engineering",
   "home.subtitle": "Deep learning, large models, engineering practices, and frontier thinking",
   "home.articles_count": "{count} articles",
@@ -15,7 +14,6 @@
   "home.views": "{count} views",
   "home.prev_page": "Previous",
   "home.next_page": "Next",
-
   "post.breadcrumb_home": "Home",
   "post.author": "AI Engineer",
   "post.views": "{count} views",
@@ -24,13 +22,11 @@
   "post.comments": "Comments",
   "post.not_found": "Article not found",
   "post.loading": "Loading...",
-
   "categories.title": "Categories",
   "categories.subtitle": "Browse all articles by topic",
   "categories.no_description": "No description",
   "categories.post_count": "{count} articles",
   "categories.browse": "Browse →",
-
   "about.title": "About",
   "about.subtitle": "An AI Engineer's Tech Blog",
   "about.content": "Hello! I'm the author of this site, a developer focused on AI application engineering. Here I document my exploration of deep learning, large language models, engineering practices, and cutting-edge technologies.",
@@ -42,14 +38,12 @@
   "about.user_system_desc": "JWT Auth + Permissions",
   "about.comments": "Comments",
   "about.comments_desc": "Nested comments + Moderation",
-
   "ai_assistant.title": "AI Assistant",
   "ai_assistant.subtitle": "Smart Search · Tech Q&A",
   "ai_assistant.welcome": "Hello! I'm the AI Assistant 👋",
   "ai_assistant.hint": "Ask a technical question to search related articles",
   "ai_assistant.related_articles": "Related Articles",
   "ai_assistant.error": "Sorry, the service encountered an error. Please try again later.",
-
   "login.title": "Login",
   "login.submit": "Login",
   "login.loading": "Logging in...",
@@ -57,7 +51,6 @@
   "login.password": "Password",
   "login.no_account": "No account? Register now",
   "login.failed": "Login failed",
-
   "register.title": "Register",
   "register.submit": "Register",
   "register.loading": "Registering...",
@@ -69,11 +62,15 @@
   "register.code_sent": "Code Sent",
   "register.success": "Registration successful",
   "register.failed": "Registration failed",
-
   "footer.built_with": "Built with Vue 3 & FastAPI",
   "footer.tagline": "AI Engineer · Exploring the boundaries of technology and engineering",
-
   "common.loading": "Loading...",
   "common.retry": "Retry",
-  "common.error": "Error"
+  "common.error": "Error",
+  "nav.portfolio": "Portfolio",
+  "portfolio.title": "Portfolio",
+  "portfolio.subtitle": "My Personal Projects & Tech Practice",
+  "portfolio.empty": "No projects yet",
+  "portfolio.back": "Back to Home",
+  "portfolio.view_project": "View Project"
 }

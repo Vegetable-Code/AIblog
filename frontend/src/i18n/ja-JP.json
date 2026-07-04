@@ -1,11 +1,10 @@
-﻿{
+{
   "nav.home": "ホーム",
   "nav.categories": "カテゴリー",
   "nav.about": "概要",
   "nav.login": "ログイン",
   "nav.logout": "ログアウト",
   "nav.language": "言語",
-
   "home.title": "AI技術とエンジニアリングを探求",
   "home.subtitle": "深層学習、大規模言語モデル、エンジニアリング実践、最先端の思考を共有",
   "home.articles_count": "全 {count} 記事",
@@ -15,7 +14,6 @@
   "home.views": "{count} ビュー",
   "home.prev_page": "前へ",
   "home.next_page": "次へ",
-
   "post.breadcrumb_home": "ホーム",
   "post.author": "AIエンジニア",
   "post.views": "{count} ビュー",
@@ -24,13 +22,11 @@
   "post.comments": "コメント",
   "post.not_found": "記事が見つかりません",
   "post.loading": "読み込み中...",
-
   "categories.title": "記事カテゴリー",
   "categories.subtitle": "テーマ別にすべての記事を閲覧",
   "categories.no_description": "説明なし",
   "categories.post_count": "{count} 記事",
   "categories.browse": "閲覧 →",
-
   "about.title": "このサイトについて",
   "about.subtitle": "AIアプリケーションエンジニアの技術ブログ",
   "about.content": "こんにちは！このサイトの作者です。AIアプリケーションエンジニアリングに特化した開発者です。深層学習、大規模言語モデル、エンジニアリング実践、最先端技術についての探求を記録しています。",
@@ -42,14 +38,12 @@
   "about.user_system_desc": "JWT認証 + 権限管理",
   "about.comments": "コメント機能",
   "about.comments_desc": "ネストコメント + 審査機能",
-
   "ai_assistant.title": "AIアシスタント",
   "ai_assistant.subtitle": "スマート検索 · 技術Q&A",
   "ai_assistant.welcome": "こんにちは！AIアシスタントです 👋",
   "ai_assistant.hint": "技術的な質問を入力して関連記事を検索",
   "ai_assistant.related_articles": "関連記事",
   "ai_assistant.error": "申し訳ございません、サービスでエラーが発生しました。後でもう一度お試しください。",
-
   "login.title": "ログイン",
   "login.submit": "ログイン",
   "login.loading": "ログイン中...",
@@ -57,7 +51,6 @@
   "login.password": "パスワード",
   "login.no_account": "アカウントがありませんか？今すぐ登録",
   "login.failed": "ログイン失敗",
-
   "register.title": "登録",
   "register.submit": "登録",
   "register.loading": "登録中...",
@@ -69,11 +62,15 @@
   "register.code_sent": "認証コードを送信しました",
   "register.success": "登録成功",
   "register.failed": "登録失敗",
-
   "footer.built_with": "Built with Vue 3 & FastAPI",
   "footer.tagline": "AIエンジニア · 技術とエンジニアリングの境界を探求",
-
   "common.loading": "読み込み中...",
   "common.retry": "再試行",
-  "common.error": "エラー"
+  "common.error": "エラー",
+  "nav.portfolio": "作品集",
+  "portfolio.title": "作品集",
+  "portfolio.subtitle": "私のプロジェクトと技術実践",
+  "portfolio.empty": "まだ作品がありません",
+  "portfolio.back": "ホームに戻る",
+  "portfolio.view_project": "プロジェクトを見る"
 }
