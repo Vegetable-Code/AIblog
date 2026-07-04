@@ -60,8 +60,8 @@
         <p class="text-slate-600 text-xs mt-1">{{ $t('footer.tagline') }}</p>
       </div>
     </footer>
-    <AIAssistant />
-    <CompanionPet />
+    <AIAssistant :open="aiOpen" @close="aiOpen = false" />
+    <CompanionPet @ask="aiOpen = true" />
     <LoginModal />
     <Toast ref="toastRef" />
 
@@ -107,6 +107,7 @@ function handleScroll() {
   showBackToTop.value = window.scrollY > 400
 }
 const toastRef = ref(null)
+const aiOpen = ref(false)
 const auth = useAuthStore()
 const langRef = ref(null)
 

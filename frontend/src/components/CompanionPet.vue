@@ -153,6 +153,7 @@ const bodyColor = computed(() => isDark.value ? '#f97316' : '#fdba74')
 const tailColor = computed(() => isDark.value ? '#ea580c' : '#fb923c')
 
 // 状态
+const emit = defineEmits(["ask"])
 const sleep = ref(false)
 const wag = ref(false)
 const jump = ref(false)
@@ -190,7 +191,7 @@ function resetIdleTimer() {
 function onHover() {
   hovered.value = true
   showBubble.value = true
-  const msgs = ['你好呀 👋', '戳我一下~', '今天心情不错!', '嘿嘿~']
+  const msgs = ['问点技术问题？', '戳我聊技术~', '搜文章找我！', '嘿嘿~']
   bubbleText.value = msgs[Math.floor(Math.random() * msgs.length)]
   resetIdleTimer()
 }
@@ -212,6 +213,7 @@ function onClick() {
     showHeart.value = false
   }, 800)
   resetIdleTimer()
+  emit("ask")
 }
 
 onMounted(() => {
