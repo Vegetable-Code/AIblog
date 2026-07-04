@@ -2,6 +2,7 @@
 from sqlalchemy.orm import Session
 from typing import List, Optional
 import os, uuid
+from ..core import storage
 from ..core.database import get_db
 from ..core.deps import get_current_active_superuser
 from ..models.project import Project
@@ -68,15 +69,12 @@ def delete_project(project_id: int, db: Session = Depends(get_db), user=Depends(
     return {"message": "删除成功"}
 
 # ---------- image upload ----------
-UPLOAD_DIR = os.environ.get("UPLOAD_ROOT", "uploads")
-PROJECT_IMG_DIR = os.path.join(UPLOAD_DIR, "projects")
 
 @router.post("/upload")
 def upload_project_image(file: UploadFile = File(...), user=Depends(get_current_active_superuser)):
-    os.makedirs(PROJECT_IMG_DIR, exist_ok=True)
     ext = file.filename.rsplit(".", 1)[-1] if "." in (file.filename or "") else "png"
     fname = f"project_{uuid.uuid4().hex[:12]}.{ext}"
-    fpath = os.path.join(PROJECT_IMG_DIR, fname)
-    with open(fpath, "wb") as f:
-        f.write(file.file.read())
-    return {"url": f"/uploads/projects/{fname}"}
+    key = f"projects/{fname}"
+    url = storage.upload_fileobj(file.file, key)
+    return {"url": url}
+
