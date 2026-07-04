@@ -5,12 +5,12 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
-        {{ ('portfolio.back') || '????' }}
+        {{ $t('portfolio.back') || '返回首页' }}
       </router-link>
     </div>
     <div class="text-center py-10 mb-8">
-      <h1 class="text-4xl font-bold text-white mb-3">{{ ('portfolio.title') || '???' }}</h1>
-      <p class="text-slate-400 max-w-xl mx-auto">{{ ('portfolio.subtitle') || '???????????' }}</p>
+      <h1 class="text-4xl font-bold text-white mb-3">{{ $t('portfolio.title') || '作品集' }}</h1>
+      <p class="text-slate-400 max-w-xl mx-auto">{{ $t('portfolio.subtitle') || '我的个人项目与技术实践' }}</p>
     </div>
     <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div v-for="i in 4" :key="i" class="bg-slate-800/40 rounded-2xl p-6 animate-pulse">
@@ -20,7 +20,7 @@
       </div>
     </div>
     <div v-else-if="projects.length === 0" class="text-center py-20">
-      <p class="text-slate-500">{{ ('portfolio.empty') || '????' }}</p>
+      <p class="text-slate-500">{{ $t('portfolio.empty') || '????' }}</p>
     </div>
     <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div v-for="p in projects" :key="p.id"
@@ -67,7 +67,7 @@
               <a v-if="detail.link" :href="detail.link" target="_blank"
                 class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium bg-gradient-to-r from-cyan-500 to-violet-500 text-white hover:shadow-lg hover:shadow-cyan-500/30 transition-all">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                {{ ('portfolio.view_project') || '????' }}
+                {{ $t('portfolio.view_project') || '????' }}
               </a>
             </div>
           </div>
