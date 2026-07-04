@@ -9,6 +9,7 @@ from .api import auth, posts, categories, tags, comments, users, dashboard, ai_s
 from .api import i18n, schedules
 from .api import import_pdf
 from .api.posts import detail_router
+from .api import projects as projects_api
 
 Base.metadata.create_all(bind=engine)
 
@@ -30,6 +31,7 @@ app.include_router(i18n.router, prefix=api_prefix)
 app.include_router(schedules.router, prefix=api_prefix)
 app.include_router(import_pdf.router, prefix=api_prefix)
 app.include_router(detail_router, prefix=api_prefix)
+app.include_router(projects_api.router, prefix=api_prefix)
 
 # Mount uploads directory (for local dev without Nginx)
 _uploads_dir = os.environ.get("UPLOAD_ROOT", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "uploads"))

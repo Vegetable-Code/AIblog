@@ -6,3 +6,4 @@ from .comment import Comment
 from .post_tag import post_tags
 
 from .schedule import Schedule
+from .project import Project

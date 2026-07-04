@@ -10,6 +10,7 @@ import Tags from '../views/Tags.vue'
 import Comments from '../views/Comments.vue'
 import Users from '../views/Users.vue'
 import Profile from '../views/Profile.vue'
+import Projects from '../views/Projects.vue'
 
 const routes = [
   { path: '/login', name: 'Login', component: Login },
@@ -27,6 +28,7 @@ const routes = [
       { path: 'tags', name: 'Tags', component: Tags },
       { path: 'comments', name: 'Comments', component: Comments },
       { path: 'users', name: 'Users', component: Users },
+      { path: 'projects', name: 'Projects', component: Projects },
       { path: 'profile', name: 'Profile', component: Profile },
     ],
   },

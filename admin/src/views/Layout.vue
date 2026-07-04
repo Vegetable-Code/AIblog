@@ -70,7 +70,7 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { SwitchButton, Upload, Sunny, Moon } from '@element-plus/icons-vue'
+import { SwitchButton, Upload, Sunny, Moon, Grid } from '@element-plus/icons-vue'
 import { useAuthStore } from '../stores/auth'
 
 const route = useRoute()

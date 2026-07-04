@@ -4,12 +4,14 @@ import PostDetail from '../views/PostDetail.vue'
 import CategoriesView from '../views/CategoriesView.vue'
 import AboutView from '../views/AboutView.vue'
 import TagPostsView from '../views/TagPostsView.vue'
+import PortfolioView from '../views/PortfolioView.vue'
 
 const routes = [
   { path: '/', name: 'Home', component: HomeView },
   { path: '/post/:slug', name: 'PostDetail', component: PostDetail },
   { path: '/categories', name: 'Categories', component: CategoriesView },
   { path: '/about', name: 'About', component: AboutView },
+  { path: '/projects', name: 'Portfolio', component: PortfolioView },
   { path: '/tag/:slug', name: 'TagPosts', component: TagPostsView },
 ]
 
