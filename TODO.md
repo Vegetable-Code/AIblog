@@ -1,4 +1,4 @@
-﻿# Railway 部署待处理事项
+﻿# 待处理事项
 
 ## ✅ 已完成
 
@@ -10,6 +10,49 @@
 - [x] 作品集（Portfolio）模块
 - [x] Cloudflare R2 对象存储配置（文章 + 作品集图片）
 - [x] 作品集图片使用 R2 存储（解决重部署丢失问题）
+
+## 🔲 阿里云部署（待执行）
+
+目标：将系统从 Railway 迁移到阿里云 ECS，获得更好的可控性和性能。
+
+### 你需要准备的资源
+
+| 资源 | 最低配置 | 说明 |
+|------|---------|------|
+| ECS 服务器 | 2C4G, Ubuntu 22.04, 40G 系统盘 | 运行主程序 |
+| RDS MySQL | 1C1G, 20G | 独立数据库，连接稳定 |
+| OSS 对象存储 | 按量付费，开启公共读 | 替代 R2，兼容现有 S3 接口 |
+| 域名 | 需备案 | 绑定 HTTPS |
+
+### 实施步骤
+
+**你负责：**
+1. 购买 ECS + RDS + OSS
+2. 域名购买 + 备案 + DNS 解析
+3. ECS 安全组开放 80/443/22 端口
+4. 提供 MySQL / OSS 连接信息
+
+**我来做：**
+1. 服务器初始化（Docker + Nginx + SSL）
+2. 调整 Dockerfile/docker-compose 适配阿里云
+3. 配置 .env 环境变量
+4. 部署 + 验证全链路可用
+
+**待确认配置项：**
+- [ ] ECS 公网 IP / SSH 登录方式
+- [ ] RDS 连接地址、用户名、密码
+- [ ] OSS Endpoint、AccessKey、SecretKey、BucketName
+- [ ] 域名及 DNS 记录
+
+### 代码改动
+
+- Dockerfile — 调整 PORT 变量适应阿里云
+- docker-compose.yml — 补齐前台/后台/Nginx 服务
+- 新增 
+ginx.conf — HTTPS 跳转 + SSL 配置
+- OSS 配置 — 直接在环境变量中改 S3_ENDPOINT 即可，无需改代码
+
+---
 
 ## 📦 AI 工具插件系统（待规划）
 
