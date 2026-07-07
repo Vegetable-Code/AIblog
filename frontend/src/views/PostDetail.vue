@@ -40,7 +40,7 @@
 
 
     <!-- Content -->
-    <div class="prose prose-invert max-w-none prose-headings:text-white prose-a:text-cyan-400 prose-strong:text-white prose-code:text-cyan-300 prose-pre:bg-slate-900 prose-pre:border prose-pre:border-slate-700 prose-pre:rounded-xl prose-blockquote:border-cyan-500 prose-blockquote:text-slate-400 prose-td:border-slate-700 prose-th:border-slate-700 prose-img:rounded-xl" v-html="renderedContent"></div>
+    <div class="prose prose-invert max-w-none prose-headings:text-white prose-a:text-cyan-400 prose-strong:text-white prose-code:text-cyan-300 prose-pre:bg-slate-900 prose-pre:border prose-pre:border-slate-700 prose-pre:rounded-xl prose-blockquote:border-cyan-500 prose-blockquote:text-slate-400 prose-td:border-slate-700 prose-th:border-slate-700 prose-img:rounded-xl" v-html="renderedContent" @click="handleContentClick"></div>
 
     <!-- Tags at bottom -->
     <div class="flex flex-wrap gap-2 mt-10 pt-8 border-t border-slate-800" v-if="post.tags?.length">
@@ -87,6 +87,19 @@
     <p class="text-slate-500">{{ $t('post.not_found') }}</p>
     <router-link to="/" class="inline-block mt-4 text-cyan-400 hover:text-cyan-300">返回{{ $t('post.breadcrumb_home') }}</router-link>
   </div>
+
+<!-- Image preview modal -->
+<Teleport to="body">
+  <div v-if="previewImg" class="fixed inset-0 z-[300] flex items-center justify-center p-4" @click="previewImg = null">
+    <div class="fixed inset-0 bg-black/80 backdrop-blur-sm"></div>
+    <img :src="previewImg" class="relative max-w-[90vw] max-h-[90vh] object-contain rounded-xl shadow-2xl" @click.stop />
+    <button @click="previewImg = null"
+      class="absolute top-6 right-6 w-10 h-10 rounded-full bg-slate-800/80 border border-slate-700/60 text-slate-400 hover:text-white hover:bg-slate-700 flex items-center justify-center z-10 transition-all">
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+  </div>
+</Teleport>
+
 </template>
 
 <script setup>
@@ -119,7 +132,20 @@ const renderedContent = computed(() => {
   return renderMarkdown(post.value?.content || '')
 })
 
+
+const previewImg = ref(null)
+
+// Handle clicking images in rendered content
+function handleContentClick(e) {
+  const img = e.target.closest('.prose img')
+  if (img && img.src) {
+    previewImg.value = img.src
+  }
+}
+
 onMounted(async () => {
+  // existing onMounted
+
   try {
     const res = await axios.get('/api/v1/posts/' + route.params.slug)
     post.value = res.data
@@ -163,6 +189,11 @@ useHead({
 }
 .prose img {
   border-radius: 12px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.prose img:hover {
+  opacity: 0.85;
 }
 .prose table {
   border-collapse: collapse;
