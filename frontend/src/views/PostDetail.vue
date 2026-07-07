@@ -38,10 +38,6 @@
       </div>
     </header>
 
-    <!-- Cover Image -->
-    <div v-if="post.cover_image" class="mb-10 rounded-2xl overflow-hidden border border-slate-700/50">
-      <img :src="post.cover_image" class="w-full max-h-[400px] object-cover" />
-    </div>
 
     <!-- Content -->
     <div class="prose prose-invert max-w-none prose-headings:text-white prose-a:text-cyan-400 prose-strong:text-white prose-code:text-cyan-300 prose-pre:bg-slate-900 prose-pre:border prose-pre:border-slate-700 prose-pre:rounded-xl prose-blockquote:border-cyan-500 prose-blockquote:text-slate-400 prose-td:border-slate-700 prose-th:border-slate-700 prose-img:rounded-xl" v-html="renderedContent"></div>
