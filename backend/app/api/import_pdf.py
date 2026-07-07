@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 import os, re, uuid, shutil
 from typing import Optional
 
@@ -14,7 +14,7 @@ from ..models.user import User
 from ..api.posts import _generate_summary
 from ..core import storage
 
-router = APIRouter(prefix="/posts", tags=["??"])
+router = APIRouter(prefix="/posts", tags=["文章"])
 
 ALLOWED_EXTENSIONS = {".pdf"}
 MAX_FILE_SIZE = 50 * 1024 * 1024
@@ -42,7 +42,7 @@ async def import_pdf(
 ):
     ext = os.path.splitext(file.filename or "")[1].lower()
     if ext not in ALLOWED_EXTENSIONS:
-        raise HTTPException(status_code=400, detail=f"?????????{ext}???? PDF")
+        raise HTTPException(status_code=400, detail=f"?????????{ext}下载原始 PDF")
 
     tmp_dir = None
     try:
@@ -50,7 +50,7 @@ async def import_pdf(
 
         content_bytes = await file.read()
         if len(content_bytes) > MAX_FILE_SIZE:
-            raise HTTPException(status_code=400, detail="????????? 50MB")
+            raise HTTPException(status_code=400, detail="文件过大，限制 50MB")
 
         doc = fitz.open(stream=content_bytes, filetype="pdf")
         page_count = len(doc)
@@ -83,7 +83,7 @@ async def import_pdf(
         full_text = "\n".join(full_text_parts).strip()
 
         if not page_urls:
-            raise HTTPException(status_code=400, detail="PDF ??????")
+            raise HTTPException(status_code=400, detail="PDF 解析失败")
 
         # Upload original PDF
         pdf_key = f"pdfs/{uid}/original.pdf"
@@ -97,7 +97,7 @@ async def import_pdf(
         html_parts.append('<p class="pdf-download" style="margin-top:2rem;padding-top:1rem;border-top:1px solid #e2e8f0;">')
         html_parts.append(f'  <a href="{pdf_url}" download style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 1.5rem;background:#1e293b;color:white;border-radius:8px;text-decoration:none;font-weight:500;">')
         html_parts.append('    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>')
-        html_parts.append('    ???? PDF')
+        html_parts.append('    下载原始 PDF')
         html_parts.append('  </a>')
         html_parts.append('</p>')
         content_html = "\n".join(html_parts)
@@ -148,7 +148,7 @@ async def import_pdf(
         db.refresh(post)
 
         return {
-            "message": "????",
+            "message": "导入成功",
             "id": post.id,
             "title": post.title,
             "slug": post.slug,
@@ -160,7 +160,7 @@ async def import_pdf(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"PDF ?????{str(e)}")
+        raise HTTPException(status_code=500, detail=f"PDF 解析失败：{str(e)}")
     finally:
         if tmp_dir and os.path.exists(tmp_dir):
             shutil.rmtree(tmp_dir, ignore_errors=True)
