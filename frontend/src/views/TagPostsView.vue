@@ -50,7 +50,7 @@
           <div class="flex items-start gap-6">
             <div v-if="post.cover_image" class="hidden md:block flex-shrink-0">
               <div class="w-28 h-28 rounded-xl overflow-hidden border border-slate-700/50">
-                <img :src="post.cover_image" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <img :src="post.cover_image" :alt="post.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
               </div>
             </div>
             <div class="flex-1 min-w-0">
@@ -73,6 +73,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useHead } from '@unhead/vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '../stores/app'
@@ -111,5 +112,13 @@ onMounted(async () => {
     // noop
   }
   loading.value = false
+})
+
+// Dynamic SEO
+useHead({
+  title: () => tag.value ? tag.value.name + ' - AI宸ョ▼甯埚崥瀹' : '鏍囩 - AI宸ョ▼甯埚崥瀹',
+  meta: () => [
+    { name: 'description', content: tag.value ? '鏌ョ湅"' + tag.value.name + '"鏍囩鐩稿叧鏂囩珷' : '鏍囩鍒嗛〉' },
+  ]
 })
 </script>

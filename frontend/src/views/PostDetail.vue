@@ -95,6 +95,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useHead } from '@unhead/vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 import { marked } from 'marked'
@@ -131,6 +132,18 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
+})
+
+// Dynamic SEO
+useHead({
+  title: () => post.value ? post.value.title + ' - AI宸ョ▼甯埚崥瀹' : '鍔犺浇涓?',
+  meta: () => post.value ? [
+    { name: 'description', content: post.value.summary || post.value.title },
+    { property: 'og:title', content: post.value.title + ' - AI宸ョ▼甯埚崥瀹' },
+    { property: 'og:description', content: post.value.summary || post.value.title },
+    { property: 'og:image', content: post.value.cover_image || '' },
+    { property: 'og:type', content: 'article' },
+  ] : []
 })
 </script>
 

@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@unhead/vue": "^1.11.20",
     "axios": "^1.6.2",
     "highlight.js": "^11.9.0",
     "marked": "^11.2.0",

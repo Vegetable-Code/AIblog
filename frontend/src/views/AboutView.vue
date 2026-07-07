@@ -56,3 +56,16 @@
     </div>
   </div>
 </template>
+
+<script setup>
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: '鍏充簬 - AI宸ョ▼甯埚崥瀹?',
+  meta: [
+    { name: 'description', content: '鍏充簬鏈功浣滆€呭拰杩欎釜鍗氬銆傚叏鏍堝伐绋嬪笀锛岀儹鐖辨満鍣ㄥ涔犱笌寮€婧愩€?' },
+    { property: 'og:title', content: '鍏充簬 - AI宸ョ▼甯埚崥瀹?' },
+    { property: 'og:description', content: '鍏充簬鏈功浣滆€呭拰杩欎釜鍗氬銆傚叏鏍堝伐绋嬪笀锛岀儹鐖辨満鍣ㄥ涔犱笌寮€婧愩€?' },
+  ]
+})
+</script>

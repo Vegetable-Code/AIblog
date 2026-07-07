@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div>
     <div class="mb-6">
       <router-link to="/" class="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-cyan-400 transition-colors">
@@ -25,9 +25,9 @@
     <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div v-for="p in projects" :key="p.id"
         class="group bg-slate-800/30 backdrop-blur-sm border border-slate-700/40 rounded-2xl overflow-hidden hover:border-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/5 transition-all duration-500 cursor-pointer"
-        @click="openDetail(p)">
+        @click="openDetail(p)" role="button" tabindex="0" aria-label="查看作品：p.title">
         <div v-if="p.cover_image" class="h-48 overflow-hidden">
-          <img :src="p.cover_image" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <img :src="p.cover_image" :alt="p.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
         </div>
         <div class="p-6">
           <h3 class="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors mb-2">{{ p.title }}</h3>
@@ -77,6 +77,7 @@
   </div>
 </template>
 <script setup>
+import { useHead } from '@unhead/vue'
 import { ref, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import axios from 'axios'
@@ -118,5 +119,14 @@ onMounted(async () => {
     projects.value = res.data
   } catch {}
   loading.value = false
+})
+
+useHead({
+  title: '浣滃搧闆? - AI宸ョ▼甯埚崥瀹?',
+  meta: [
+    { name: 'description', content: '涓汉椤圭洰浣滃搧灞曠ず锛屾兜鐩栨満鍣ㄥ涔犮€佸叏鏍堝紑鍙戙€佺綉绔欏缓璁剧瓑瀹炶返椤圭洰銆?' },
+    { property: 'og:title', content: '浣滃搧闆? - AI宸ョ▼甯埚崥瀹?' },
+    { property: 'og:description', content: '涓汉椤圭洰浣滃搧灞曠ず锛屾兜鐩栨満鍣ㄥ涔犮€佸叏鏍堝紑鍙戙€佺綉绔欏缓璁剧瓑瀹炶返椤圭洰銆?' },
+  ]
 })
 </script>

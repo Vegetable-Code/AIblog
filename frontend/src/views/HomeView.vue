@@ -35,7 +35,7 @@
             <div class="flex items-start gap-6">
               <div v-if="post.cover_image" class="hidden md:block flex-shrink-0">
                 <div class="w-28 h-28 rounded-xl overflow-hidden border border-slate-700/50">
-                  <img :src="post.cover_image" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img :src="post.cover_image" :alt="post.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
                 </div>
               </div>
               <div class="flex-1 min-w-0">
@@ -173,6 +173,7 @@
 </template>
 
 <script setup>
+import { useHead } from '@unhead/vue'
 import { ref, onMounted, computed, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '../stores/app'
@@ -436,6 +437,15 @@ onMounted(async () => {
       fetchSchedules()
     }
   }
+})
+
+useHead({
+  title: 'AI宸ョ▼甯埚崥瀹? - 鏈哄櫒瀛︿範涓庡叏鏍堝紑鍙戞妧鏈垎浜?',
+  meta: [
+    { name: 'description', content: 'AI宸ョ▼甯埚崥瀹氭彁渚涙満鍣ㄥ涔犮€佹繁搴﹀涔犮€丗astAPI銆丷ue3 銆丳ython 绛夋妧鏈枃绔狅紝鏀寔 AI 鎼滅储涓庡疄鐢ㄥ伐鍏枫€?' },
+    { property: 'og:title', content: 'AI宸ョ▼甯埚崥瀹? - 鏈哄櫒瀛︿範涓庡叏鏍堝紑鍙戞妧鏈垎浜?' },
+    { property: 'og:description', content: 'AI宸ョ▼甯埚崥瀹氭彁渚涙満鍣ㄥ涔犮€佹繁搴﹀涔犮€丗astAPI銆丷ue3 銆丳ython 绛夋妧鏈枃绔狅紝鏀寔 AI 鎼滅储涓庡疄鐢ㄥ伐鍏枫€?' },
+  ]
 })
 </script>
 
