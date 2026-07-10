@@ -1,6 +1,7 @@
 import re
+import uuid
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, Path, Query
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, File, UploadFile
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import desc
 import markdown
@@ -12,6 +13,7 @@ from ..models.post import Post
 from ..models.tag import Tag
 from ..models.user import User
 from ..schemas.post import PostCreate, PostUpdate
+from ..core import storage
 
 class BatchDeleteRequest(BaseModel):
     ids: list[int]
@@ -170,6 +172,15 @@ def batch_delete_posts(data: BatchDeleteRequest, db: Session = Depends(get_db), 
     deleted = db.query(Post).filter(Post.id.in_(data.ids)).delete(synchronize_session=False)
     db.commit()
     return {"message": f"成功删除 {deleted} 篇文章", "deleted_count": deleted}
+
+# ---------- Image upload for article editor ----------
+@router.post("/upload-image")
+def upload_post_image(file: UploadFile = File(...), current_user: User = Depends(get_current_active_superuser)):
+    ext = file.filename.rsplit(".", 1)[-1] if "." in (file.filename or "") else "png"
+    fname = f"post_{uuid.uuid4().hex[:12]}.{ext}"
+    key = f"images/{fname}"
+    url = storage.upload_fileobj(file.file, key)
+    return {"url": url}
 
 # Calendar endpoint - returns dates with article counts for a given month
 @router.get("/calendar/dates")
