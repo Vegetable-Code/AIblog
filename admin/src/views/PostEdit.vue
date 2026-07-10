@@ -117,7 +117,6 @@ import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import { api } from '../stores/auth'
 import { marked } from 'marked'
-import { marked } from 'marked'
 
 const route = useRoute()
 const router = useRouter()
@@ -159,32 +158,6 @@ onMounted(async () => {
       cover_image: post.cover_image || '', is_published: post.is_published, is_top: post.is_top, }
   }
 })
-
-function openImageUpload() {
-  if (fileInput.value) fileInput.value.click()
-}
-
-async function handleImageUpload(e) {
-  const file = e.target?.files?.[0]
-  if (!file) return
-  uploading.value = true
-  try {
-    const formData = new FormData()
-    formData.append('file', file)
-    const res = await api.post('/posts/upload-image', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
-    const url = res.data.url
-    const markdownImg = '![' + file.name + '](' + url + ')'
-    form.value.content = (form.value.content || '') + '\n' + markdownImg + '\n'
-    ElMessage.success('?????')
-  } catch (e) {
-    ElMessage.error('??????')
-  } finally {
-    uploading.value = false
-    e.target.value = ''
-  }
-}
 
 function openImageUpload() {
   if (fileInput.value) fileInput.value.click()
