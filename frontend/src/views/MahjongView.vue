@@ -243,12 +243,9 @@ function handleMessage(msg) {
   switch (msg.type) {
     case 'joined':
     myPid.value = msg.pid
-    onlinePlayers.value[msg.pid] = { nickname: nickname.value, hand_len: 0, melds: [], ready: false }
-    break
-    case 'existing_players':
+    onlinePlayers.value = {}
     for (const p of msg.players) {
-        if (!onlinePlayers.value[p.pid])
-            onlinePlayers.value[p.pid] = { nickname: p.nickname, hand_len: 0, melds: [], ready: p.ready }
+      onlinePlayers.value[p.pid] = { nickname: p.nickname, hand_len: p.hand_len || 0, melds: p.melds || [], ready: p.ready || false }
     }
     break
 case 'player_joined':
@@ -264,12 +261,14 @@ case 'player_joined':
       discards.value = []
       pendingActions.value = []
       gameOver.value = null
+      gameState.value = { wall_count: msg.wall_count }
       for (const p of msg.players) onlinePlayers.value[p.pid] = { nickname: p.nickname, hand_len: p.hand_len, melds: [] }
       break
     case 'your_turn': currentTurn.value = myPid.value; break
-    case 'draw': myHand.value = msg.hand; break
+    case 'draw': myHand.value = msg.hand; if (msg.wall_count != null) gameState.value = { ...gameState.value, wall_count: msg.wall_count }; break
     case 'player_drew':
       if (onlinePlayers.value[msg.pid]) onlinePlayers.value[msg.pid].hand_len += 1
+      if (msg.wall_count != null) gameState.value = { ...gameState.value, wall_count: msg.wall_count }
       break
     case 'discard':
       if (msg.pid === myPid.value) myHand.value = msg.hand

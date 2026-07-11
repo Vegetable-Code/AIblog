@@ -1,5 +1,9 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from ..game.room_manager import Room, Player, rooms, generate_room_id
+from ..core.database import SessionLocal
+from ..models.user import User
+from ..core.config import settings
+from jose import jwt, JWTError
 import json
 
 router = APIRouter()
@@ -18,7 +22,27 @@ async def game_websocket(websocket: WebSocket, room_id: str):
             await websocket.send_text(json.dumps({"type": "error", "message": "First message must be join"}))
             return
 
-        nickname = msg.get("nickname", "Anonymous")
+        # Validate JWT token to get user
+        token = msg.get("token", "")
+        username = None
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+            username = payload.get("sub")
+        except Exception:
+            await websocket.send_text(json.dumps({"type": "error", "message": "Invalid token"}))
+            return
+        if not username:
+            await websocket.send_text(json.dumps({"type": "error", "message": "Invalid token"}))
+            return
+        db = SessionLocal()
+        try:
+            user = db.query(User).filter(User.username == username).first()
+        finally:
+            db.close()
+        if not user:
+            await websocket.send_text(json.dumps({"type": "error", "message": "User not found"}))
+            return
+        nickname = user.nickname or user.username
 
         if room is None:
             await websocket.send_text(json.dumps({"type": "error", "message": "Room not found"}))
@@ -32,16 +56,13 @@ async def game_websocket(websocket: WebSocket, room_id: str):
         player = Player(seat, websocket, nickname)
         room.players[seat] = player
 
-        await player.send({"type": "joined", "pid": seat, "room_id": room_id, "seat": seat, "players_in_room": room.player_count})
-        await room.broadcast({"type": "player_joined", "pid": seat, "nickname": nickname, "players_in_room": room.player_count}, exclude=seat)
-
-        # Send existing players to the new joiner
-        existing_players = []
+        all_players = []
         for i, p in enumerate(room.players):
-            if p and i != seat:
-                existing_players.append({"pid": i, "nickname": p.nickname, "ready": p.ready})
-        if existing_players:
-            await player.send({"type": "existing_players", "players": existing_players})
+            if p:
+                all_players.append({"pid": i, "nickname": p.nickname, "hand_len": len(p.hand), "melds": p.melds, "ready": p.ready})
+
+        await player.send({"type": "joined", "pid": seat, "room_id": room_id, "seat": seat, "players": all_players})
+        await room.broadcast({"type": "player_joined", "pid": seat, "nickname": nickname, "players_in_room": room.player_count}, exclude=seat)
 
         while True:
             raw = await websocket.receive_text()
