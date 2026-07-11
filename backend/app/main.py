@@ -11,6 +11,7 @@ from .api import import_pdf
 from .api import seo
 from .api.posts import detail_router
 from .api import projects as projects_api
+from .api import mahjong_game
 
 Base.metadata.create_all(bind=engine)
 
@@ -34,6 +35,7 @@ app.include_router(import_pdf.router, prefix=api_prefix)
 app.include_router(detail_router, prefix=api_prefix)
 app.include_router(projects_api.router, prefix=api_prefix)
 app.include_router(seo.router)
+app.include_router(mahjong_game.router)
 
 # Mount uploads directory (for local dev without Nginx)
 _uploads_dir = os.environ.get("UPLOAD_ROOT", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "uploads"))

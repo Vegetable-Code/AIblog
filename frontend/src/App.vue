@@ -17,6 +17,7 @@
           <router-link to="/categories" class="px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-slate-800/80 transition-all">{{ $t('nav.categories') }}</router-link>
           <router-link to="/projects" class="px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-slate-800/80 transition-all">{{ $t('nav.portfolio') || '作品集' }}</router-link>
           <router-link to="/about" class="px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-slate-800/80 transition-all">{{ $t('nav.about') }}</router-link>
+          <router-link to="/mahjong" class="px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-slate-800/80 transition-all">麻将</router-link>
         
           <div class="relative" ref="langRef">
             <button @click="showLangMenu = !showLangMenu" class="px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-slate-800/80 transition-all flex items-center gap-1">
