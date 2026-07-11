@@ -241,8 +241,17 @@ function connectWebSocket() {
 
 function handleMessage(msg) {
   switch (msg.type) {
-    case 'joined': myPid.value = msg.pid; break
-    case 'player_joined':
+    case 'joined':
+    myPid.value = msg.pid
+    onlinePlayers.value[msg.pid] = { nickname: nickname.value, hand_len: 0, melds: [], ready: false }
+    break
+    case 'existing_players':
+    for (const p of msg.players) {
+        if (!onlinePlayers.value[p.pid])
+            onlinePlayers.value[p.pid] = { nickname: p.nickname, hand_len: 0, melds: [], ready: p.ready }
+    }
+    break
+case 'player_joined':
       if (!onlinePlayers.value[msg.pid]) onlinePlayers.value[msg.pid] = { nickname: msg.nickname, hand_len: 0, melds: [] }
       break
     case 'game_start':

@@ -1,4 +1,4 @@
-﻿from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from ..game.room_manager import Room, Player, rooms, generate_room_id
 import json
 
@@ -34,6 +34,14 @@ async def game_websocket(websocket: WebSocket, room_id: str):
 
         await player.send({"type": "joined", "pid": seat, "room_id": room_id, "seat": seat, "players_in_room": room.player_count})
         await room.broadcast({"type": "player_joined", "pid": seat, "nickname": nickname, "players_in_room": room.player_count}, exclude=seat)
+
+        # Send existing players to the new joiner
+        existing_players = []
+        for i, p in enumerate(room.players):
+            if p and i != seat:
+                existing_players.append({"pid": i, "nickname": p.nickname, "ready": p.ready})
+        if existing_players:
+            await player.send({"type": "existing_players", "players": existing_players})
 
         while True:
             raw = await websocket.receive_text()
