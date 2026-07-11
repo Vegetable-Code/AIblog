@@ -9,11 +9,8 @@
         <p class="text-slate-400 text-sm mb-6">多人在线对战的广东麻将游戏</p>
         <div class="space-y-3">
           <div class="flex gap-3">
-            <input v-model="nickname" placeholder="输入昵称"
+            <input v-model="roomIdInput" placeholder="输入房间号"
               class="flex-1 px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 text-sm"
-              maxlength="10" @keyup.enter="createRoom" />
-            <input v-model="roomIdInput" placeholder="房间号"
-              class="w-28 px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 text-sm"
               maxlength="4" @keyup.enter="joinRoom" />
           </div>
           <div class="flex gap-3">
@@ -100,8 +97,8 @@
         </div>
         <div class="border-t border-slate-700 pt-4">
           <div class="flex items-center gap-3 mb-2">
-            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 flex items-center justify-center text-white font-bold text-xs">{{ (nickname || 'U')[0] }}</div>
-            <span class="text-sm text-slate-300">{{ nickname }}</span>
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 flex items-center justify-center text-white font-bold text-xs">{{ (authStore.user?.nickname || authStore.user?.username || 'U')[0] }}</div>
+            <span class="text-sm text-slate-300">{{ authStore.user?.nickname || authStore.user?.username }}</span>
             <span class="text-xs text-slate-500">(你)</span>
             <div class="flex gap-1 ml-2">
               <template v-for="m in (myMelds || [])" :key="m[1]">
@@ -140,8 +137,9 @@
 
 <script setup>
 import { ref, computed, onBeforeUnmount } from 'vue'
+import { useAuthStore } from '@/stores/auth'
 
-const nickname = ref(localStorage.getItem('mahjong_nickname') || '')
+const authStore = useAuthStore()
 const roomIdInput = ref('')
 const error = ref('')
 const room = ref(null)
@@ -206,8 +204,7 @@ function wsBase() {
 }
 
 async function createRoom() {
-  if (!nickname.value.trim()) { error.value = '请输入昵称'; return }
-  localStorage.setItem('mahjong_nickname', nickname.value.trim())
+  if (!authStore.isLoggedIn) { error.value = '请先登录'; authStore.openLogin(); return }
   error.value = ''
   try {
     const res = await fetch(apiBase() + '/game/room/create', { method: 'POST' })
@@ -218,9 +215,8 @@ async function createRoom() {
 }
 
 async function joinRoom() {
-  if (!nickname.value.trim()) { error.value = '请输入昵称'; return }
+  if (!authStore.isLoggedIn) { error.value = '请先登录'; authStore.openLogin(); return }
   if (!roomIdInput.value.trim()) { error.value = '请输入房间号'; return }
-  localStorage.setItem('mahjong_nickname', nickname.value.trim())
   error.value = ''
   roomId.value = roomIdInput.value.trim().toUpperCase()
   connectWebSocket()
@@ -232,7 +228,7 @@ function connectWebSocket() {
   ws.value = socket
   room.value = {}
   socket.onopen = () => {
-    socket.send(JSON.stringify({ type: 'join', nickname: nickname.value.trim() }))
+    socket.send(JSON.stringify({ type: 'join', token: authStore.token }))
   }
   socket.onmessage = (e) => { handleMessage(JSON.parse(e.data)) }
   socket.onclose = () => { if (room.value) { error.value = '连接已断开' }; ws.value = null }
