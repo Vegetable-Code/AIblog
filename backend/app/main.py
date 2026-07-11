@@ -35,7 +35,7 @@ app.include_router(import_pdf.router, prefix=api_prefix)
 app.include_router(detail_router, prefix=api_prefix)
 app.include_router(projects_api.router, prefix=api_prefix)
 app.include_router(seo.router)
-app.include_router(mahjong_game.router)
+app.include_router(mahjong_game.router, prefix=api_prefix)
 
 # Mount uploads directory (for local dev without Nginx)
 _uploads_dir = os.environ.get("UPLOAD_ROOT", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "uploads"))
