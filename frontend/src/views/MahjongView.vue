@@ -137,7 +137,7 @@
 
 <script setup>
 import { ref, computed, onBeforeUnmount } from 'vue'
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '../stores/auth'
 
 const authStore = useAuthStore()
 const roomIdInput = ref('')
