@@ -103,7 +103,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useHead } from '@unhead/vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
@@ -117,6 +117,18 @@ const loading = ref(true)
 function formatDate(d) {
   if (!d) return ''
   return new Date(d).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })
+}
+
+// Scroll position persistence
+const SCROLL_KEY = 'post_scroll_' + route.params.slug
+function saveScroll() {
+  sessionStorage.setItem(SCROLL_KEY, window.scrollY)
+}
+function restoreScroll() {
+  const saved = sessionStorage.getItem(SCROLL_KEY)
+  if (saved) {
+    nextTick(() => window.scrollTo(0, parseInt(saved)))
+  }
 }
 
 function renderMarkdown(md) {
@@ -153,8 +165,15 @@ onMounted(async () => {
     post.value = null
   } finally {
     loading.value = false
+    restoreScroll()
   }
-})
+  window.addEventListener('scroll', saveScroll, { passive: true })
+}
+
+onBeforeUnmount(() => {
+  saveScroll()
+  window.removeEventListener('scroll', saveScroll)
+}))
 
 // Dynamic SEO
 useHead({
