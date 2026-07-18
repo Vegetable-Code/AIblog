@@ -47,11 +47,11 @@
     </header>
 
     <main class="relative z-10 flex-1 max-w-5xl mx-auto w-full px-6 py-10">
-      <router-view v-slot="{ Component }">
-        <transition name="page" mode="out-in">
-          <component :is="Component" />
-        </transition>
-      </router-view>
+     <router-view v-slot="{ Component }">
+       <transition name="page" mode="out-in">
+          <component :is="Component" :key="route.path" />
+       </transition>
+     </router-view>
     </main>
 
     <footer class="relative z-10 border-t border-slate-800 py-10">
