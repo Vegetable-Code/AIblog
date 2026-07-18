@@ -10,22 +10,22 @@
           class="px-4 py-1.5 text-sm font-medium rounded-lg transition-all"
           :class="mode === 'edit' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'">
           <svg class="w-4 h-4 inline-block mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-          ??
+          编辑
         </button>
         <button @click="mode = 'preview'"
           class="px-4 py-1.5 text-sm font-medium rounded-lg transition-all"
           :class="mode === 'preview' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'">
           <svg class="w-4 h-4 inline-block mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-          ??
+          预览
         </button>
       </div>
       <!-- Image upload button -->
       <button @click="openImageUpload"
         class="px-3 py-1.5 text-sm font-medium rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-100 hover:border-slate-400 transition-all flex items-center gap-1.5">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-        ????
+        上传图片
       </button>
-      <span v-if="uploading" class="text-xs text-slate-400">???...</span>
+      <span v-if="uploading" class="text-xs text-slate-400">上传中...</span>
       <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="handleImageUpload" />
     </div>
 
@@ -64,15 +64,15 @@
         </el-form-item>
 
         <!-- Normal:         <!-- Normal: Editable content with preview toggle -->
-        <el-form-item v-else label="内容">
-          <div v-show="mode === 'edit'">
-            <el-input v-model="form.content" type="textarea" :rows="16" placeholder="支持 Markdown 语法" style="width: 100%" />
+        <el-form-item v-else label="内容" style="width: 100%">
+          <div v-show="mode === 'edit'" style="width: 100%">
+            <el-input v-model="form.content" type="textarea" :rows="16" placeholder="支持 Markdown 语法" style="width: 100%; min-height: 400px" />
           </div>
           <div v-show="mode === 'preview'" class="preview-panel border rounded-lg p-5 bg-white min-h-[300px] max-h-[600px] overflow-y-auto prose prose-sm max-w-none prose-headings:text-slate-800 prose-a:text-blue-600 prose-strong:text-slate-700 prose-code:text-blue-500 prose-pre:bg-slate-800 prose-pre:text-slate-100 prose-blockquote:border-blue-400 prose-blockquote:text-slate-500 prose-img:rounded-lg">
             <div v-if="form.content" v-html="renderedPreview"></div>
             <div v-else class="text-slate-400 text-center py-16">
               <svg class="w-12 h-12 mx-auto mb-3 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-              <p class="mt-2">??????????????</p>
+              <p class="mt-2">暂无内容，请开始编写</p>
             </div>
           </div>
         </el-form-item>        <el-form-item label="标签">
@@ -137,7 +137,7 @@ const renderedPreview = computed(() => {
   try {
     return marked(form.value.content, { breaks: true, gfm: true })
   } catch (e) {
-    return '<p class="text-red-500">????</p>'
+    return '<p class="text-red-500">渲染失败</p>'
   }
 })
 
@@ -176,9 +176,9 @@ async function handleImageUpload(e) {
     const url = res.data.url
     const markdownImg = '![' + file.name + '](' + url + ')'
     form.value.content = (form.value.content || '') + '\n' + markdownImg + '\n'
-    ElMessage.success('?????')
+    ElMessage.success('图片上传成功')
   } catch (e) {
-    ElMessage.error('??????')
+    ElMessage.error('图片上传失败')
   } finally {
     uploading.value = false
     e.target.value = ''
