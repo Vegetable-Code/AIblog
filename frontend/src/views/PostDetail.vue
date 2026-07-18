@@ -173,7 +173,7 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   saveScroll()
   window.removeEventListener('scroll', saveScroll)
-}))
+})
 
 // Dynamic SEO
 useHead({
