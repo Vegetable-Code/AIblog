@@ -190,10 +190,10 @@ onBeforeUnmount(() => {
 
 // Dynamic SEO
 useHead({
-  title: () => post.value ? post.value.title + ' - AI宸ョ▼甯埚崥瀹' : '鍔犺浇涓?',
+  title: () => post.value ? post.value.title + ' - codefan 的 AI 工坊' : '鍔犺浇涓?',
   meta: () => post.value ? [
     { name: 'description', content: post.value.summary || post.value.title },
-    { property: 'og:title', content: post.value.title + ' - AI宸ョ▼甯埚崥瀹' },
+    { property: 'og:title', content: post.value.title + ' - codefan 的 AI 工坊' },
     { property: 'og:description', content: post.value.summary || post.value.title },
     { property: 'og:image', content: post.value.cover_image || '' },
     { property: 'og:type', content: 'article' },

@@ -116,7 +116,7 @@ onMounted(async () => {
 
 // Dynamic SEO
 useHead({
-  title: () => tag.value ? tag.value.name + ' - AI宸ョ▼甯埚崥瀹' : '鏍囩 - AI宸ョ▼甯埚崥瀹',
+  title: () => tag.value ? tag.value.name + ' - codefan 的 AI 工坊' : '鏍囩 - codefan 的 AI 工坊',
   meta: () => [
     { name: 'description', content: tag.value ? '鏌ョ湅"' + tag.value.name + '"鏍囩鐩稿叧鏂囩珷' : '鏍囩鍒嗛〉' },
   ]

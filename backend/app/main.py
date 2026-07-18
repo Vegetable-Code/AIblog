@@ -15,7 +15,7 @@ from .api import mahjong_game
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title=settings.PROJECT_NAME, version=settings.VERSION, description="Blog API")
+app = FastAPI(title=settings.PROJECT_NAME, version=settings.VERSION, description="codefan 的 AI 工坊")
 
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
@@ -45,4 +45,4 @@ if os.path.exists(_uploads_dir):
 
 @app.get("/")
 def root():
-    return {"message": "Blog API is running", "version": settings.VERSION}
+    return {"message": "codefan 的 AI 工坊 is running", "version": settings.VERSION}

@@ -3,7 +3,7 @@ from typing import Optional
 
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "Blog API"
+    PROJECT_NAME: str = "codefan 的 AI 工坊"
     VERSION: str = "1.0.0"
     API_V1_STR: str = "/api/v1"
 

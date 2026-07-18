@@ -440,11 +440,11 @@ onMounted(async () => {
 })
 
 useHead({
-  title: 'AI宸ョ▼甯埚崥瀹? - 鏈哄櫒瀛︿範涓庡叏鏍堝紑鍙戞妧鏈垎浜?',
+  title: 'codefan 的 AI 工坊? - 鏈哄櫒瀛︿範涓庡叏鏍堝紑鍙戞妧鏈垎浜?',
   meta: [
-    { name: 'description', content: 'AI宸ョ▼甯埚崥瀹氭彁渚涙満鍣ㄥ涔犮€佹繁搴﹀涔犮€丗astAPI銆丷ue3 銆丳ython 绛夋妧鏈枃绔狅紝鏀寔 AI 鎼滅储涓庡疄鐢ㄥ伐鍏枫€?' },
-    { property: 'og:title', content: 'AI宸ョ▼甯埚崥瀹? - 鏈哄櫒瀛︿範涓庡叏鏍堝紑鍙戞妧鏈垎浜?' },
-    { property: 'og:description', content: 'AI宸ョ▼甯埚崥瀹氭彁渚涙満鍣ㄥ涔犮€佹繁搴﹀涔犮€丗astAPI銆丷ue3 銆丳ython 绛夋妧鏈枃绔狅紝鏀寔 AI 鎼滅储涓庡疄鐢ㄥ伐鍏枫€?' },
+    { name: 'description', content: 'codefan 的 AI 工坊氭彁渚涙満鍣ㄥ涔犮€佹繁搴﹀涔犮€丗astAPI銆丷ue3 銆丳ython 绛夋妧鏈枃绔狅紝鏀寔 AI 鎼滅储涓庡疄鐢ㄥ伐鍏枫€?' },
+    { property: 'og:title', content: 'codefan 的 AI 工坊? - 鏈哄櫒瀛︿範涓庡叏鏍堝紑鍙戞妧鏈垎浜?' },
+    { property: 'og:description', content: 'codefan 的 AI 工坊氭彁渚涙満鍣ㄥ涔犮€佹繁搴﹀涔犮€丗astAPI銆丷ue3 銆丳ython 绛夋妧鏈枃绔狅紝鏀寔 AI 鎼滅储涓庡疄鐢ㄥ伐鍏枫€?' },
   ]
 })
 </script>

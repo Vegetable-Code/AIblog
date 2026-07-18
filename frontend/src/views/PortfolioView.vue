@@ -122,10 +122,10 @@ onMounted(async () => {
 })
 
 useHead({
-  title: '浣滃搧闆? - AI宸ョ▼甯埚崥瀹?',
+  title: '浣滃搧闆? - codefan 的 AI 工坊?',
   meta: [
     { name: 'description', content: '涓汉椤圭洰浣滃搧灞曠ず锛屾兜鐩栨満鍣ㄥ涔犮€佸叏鏍堝紑鍙戙€佺綉绔欏缓璁剧瓑瀹炶返椤圭洰銆?' },
-    { property: 'og:title', content: '浣滃搧闆? - AI宸ョ▼甯埚崥瀹?' },
+    { property: 'og:title', content: '浣滃搧闆? - codefan 的 AI 工坊?' },
     { property: 'og:description', content: '涓汉椤圭洰浣滃搧灞曠ず锛屾兜鐩栨満鍣ㄥ涔犮€佸叏鏍堝紑鍙戙€佺綉绔欏缓璁剧瓑瀹炶返椤圭洰銆?' },
   ]
 })

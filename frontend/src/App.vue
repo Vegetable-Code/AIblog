@@ -10,7 +10,7 @@
       <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
         <router-link to="/" class="flex items-center gap-3 group">
           <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-violet-500 flex items-center justify-center text-white font-bold text-sm group-hover:scale-110 transition-transform">AI</div>
-          <span class="text-lg font-bold text-white tracking-tight">AI工程师博客</span>
+          <span class="text-lg font-bold text-white tracking-tight">codefan的AI工坊</span>
         </router-link>
         <nav class="flex items-center gap-1" aria-label="主导航">
           <router-link to="/" class="px-4 py-2 rounded-lg text-sm" :class="route.path === '/' ? 'text-white bg-slate-800/80' : 'text-slate-400 hover:text-white hover:bg-slate-800/80'">{{ $t('nav.home') }}</router-link>
