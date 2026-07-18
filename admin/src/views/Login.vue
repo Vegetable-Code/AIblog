@@ -8,7 +8,7 @@
       <div class="text-center mb-8">
         <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-violet-500 flex items-center justify-center text-white font-bold text-lg mx-auto mb-4 shadow-lg shadow-cyan-500/20">AI</div>
         <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">管理后台</h2>
-        <p class="text-sm text-slate-400 dark:text-slate-500 mt-1">codefan的AI工坊 · 内容管理系统</p>
+        <p class="text-sm text-slate-400 dark:text-slate-500 mt-1">codefan 的 AI 工坊 · 内容管理系统</p>
       </div>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="0" size="large">
         <el-form-item prop="username">
