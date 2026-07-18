@@ -221,6 +221,16 @@ async function confirmCreateTag() {
 </script>
 
 <style scoped>
+.el-form-item__content {
+  width: 100% !important;
+}
+.el-textarea {
+  width: 100% !important;
+}
+.el-textarea__inner {
+  width: 100% !important;
+  min-height: 400px !important;
+}
 .pdf-preview {
   width: 100%;
   background: #f9fafb;
