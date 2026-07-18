@@ -168,7 +168,7 @@ onMounted(async () => {
     restoreScroll()
   }
   window.addEventListener('scroll', saveScroll, { passive: true })
-}
+})
 
 onBeforeUnmount(() => {
   saveScroll()
