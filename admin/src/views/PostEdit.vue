@@ -64,9 +64,9 @@
         </el-form-item>
 
         <!-- Normal:         <!-- Normal: Editable content with preview toggle -->
-        <el-form-item v-else label="??">
+        <el-form-item v-else label="内容">
           <div v-show="mode === 'edit'">
-            <el-input v-model="form.content" type="textarea" :rows="16" placeholder="?? Markdown ??" />
+            <el-input v-model="form.content" type="textarea" :rows="16" placeholder="支持 Markdown 语法" style="width: 100%" />
           </div>
           <div v-show="mode === 'preview'" class="preview-panel border rounded-lg p-5 bg-white min-h-[300px] max-h-[600px] overflow-y-auto prose prose-sm max-w-none prose-headings:text-slate-800 prose-a:text-blue-600 prose-strong:text-slate-700 prose-code:text-blue-500 prose-pre:bg-slate-800 prose-pre:text-slate-100 prose-blockquote:border-blue-400 prose-blockquote:text-slate-500 prose-img:rounded-lg">
             <div v-if="form.content" v-html="renderedPreview"></div>
