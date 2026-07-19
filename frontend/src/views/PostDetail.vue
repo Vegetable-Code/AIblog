@@ -178,6 +178,9 @@ onMounted(async () => {
     post.value = null
   } finally {
     loading.value = false
+    if (post.value?.content_html) {
+      nextTick(() => hljs.highlightAll())
+    }
     restoreScroll()
   }
   window.addEventListener('scroll', saveScroll, { passive: true })
