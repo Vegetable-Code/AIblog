@@ -49,8 +49,14 @@
         <el-form-item label="链接">
           <el-input v-model="form.slug" placeholder="url-slug" />
         </el-form-item>
-        <el-form-item label="摘要">
-          <el-input v-model="form.summary" type="textarea" :rows="2" placeholder="文章摘要" />
+       <el-form-item label="摘要">
+         <el-input v-model="form.summary" type="textarea" :rows="2" placeholder="文章摘要" />
+       </el-form-item>
+
+        <el-form-item label="分类">
+          <el-select v-model="form.category_id" placeholder="选择分类" clearable class="w-full">
+            <el-option v-for="c in categories" :key="c.id" :label="c.name" :value="c.id" />
+          </el-select>
         </el-form-item>
 
         <!-- PDF Import: Show image preview -->
