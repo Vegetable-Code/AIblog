@@ -168,6 +168,26 @@ function handleContentClick(e) {
   }
 }
 
+function addCopyButtons() {
+  document.querySelectorAll('.prose pre').forEach(pre => {
+    if (pre.querySelector('.copy-btn')) return
+    const btn = document.createElement('button')
+    btn.className = 'copy-btn'
+    btn.textContent = '复制'
+    btn.addEventListener('click', async () => {
+      const code = pre.querySelector('code')
+      if (!code) return
+      try {
+        await navigator.clipboard.writeText(code.textContent || '')
+        btn.textContent = '已复制'
+        setTimeout(() => { btn.textContent = '复制' }, 2000)
+      } catch {}
+    })
+    pre.style.position = 'relative'
+    pre.appendChild(btn)
+  })
+}
+
 onMounted(async () => {
   // existing onMounted
 
@@ -179,7 +199,7 @@ onMounted(async () => {
   } finally {
     loading.value = false
     if (post.value?.content_html) {
-      nextTick(() => hljs.highlightAll())
+      nextTick(() => { hljs.highlightAll(); addCopyButtons() })
     }
     restoreScroll()
   }
@@ -240,6 +260,31 @@ useHead({
 }
 .prose th {
   background: #0f172a;
+  color: #e2e8f0;
+}
+
+/* Copy button for code blocks */
+.prose pre .copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  background: #1e293b;
+  color: #94a3b8;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, background 0.2s;
+  z-index: 10;
+  line-height: 1.4;
+}
+.prose pre:hover .copy-btn {
+  opacity: 1;
+}
+.prose pre .copy-btn:hover {
+  background: #334155;
   color: #e2e8f0;
 }
 </style>
